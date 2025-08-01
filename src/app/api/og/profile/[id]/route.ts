@@ -120,19 +120,23 @@ export async function GET(
     const userIntro = user.intro ?? 'Passionate student ready to connect and collaborate!';
     const userImage = user.image ?? '';
     
-    // Extract skills (limit to 3 for display)
-    // const hardSkills = user.hardSkills?.slice(0, 3) ?? [];
 type MaybeSkill = Skill | string | undefined;
 const getTopSkills = (user: any, limit = 3): MaybeSkill[] => {
   const hard: MaybeSkill[] = Array.isArray(user.hardSkills) ? user.hardSkills.slice(0, limit) : [];
   const soft: MaybeSkill[] = Array.isArray(user.softSkills)
     ? user.softSkills.slice(0, Math.max(0, limit - hard.length))
     : [];
-  return [...hard, ...soft].slice(0, limit);
+  const combined = [...hard, ...soft].slice(0, limit);
+  
+  // Debug logging
+  console.log('OG: Hard skills:', hard);
+  console.log('OG: Soft skills:', soft);
+  console.log('OG: Combined skills:', combined);
+  
+  return combined;
 };
 
 const allSkills = getTopSkills(user);
-    
     // Extract social media - find telegram
     const socialMedia = user.socialMedia ?? [];
     const telegramAccount = socialMedia.find((s: any) => s.platform === 'telegram');
@@ -250,8 +254,7 @@ const allSkills = getTopSkills(user);
             } 
           }, `SMU ${userCourse} ${userYear}`),
           
-          // Skills badges
-         allSkills.length > 0
+        allSkills.length > 0
   ? React.createElement(
       'div',
       {
@@ -263,17 +266,24 @@ const allSkills = getTopSkills(user);
         },
       },
       ...allSkills.map((skill: MaybeSkill, index: number) => {
-        const name =
-          typeof skill === "string"
-            ? skill
-            : skill && typeof skill === "object" && "skillName" in skill
-            ? skill.skillName
-            : "Unknown";
+        // Handle both object format {skillName: "..."} and string format
+        let skillName: string;
+        
+        if (typeof skill === "string") {
+          skillName = skill;
+        } else if (skill && typeof skill === "object" && "skillName" in skill) {
+          skillName = (skill as any).skillName ?? "Unknown";
+        } else {
+          skillName = "Unknown";
+        }
+
+        // Debug logging
+        console.log(`OG: Processing skill ${index}:`, skill, '-> name:', skillName);
 
         return React.createElement(
           'div',
           {
-            key: `${name ?? "skill"}-${index}`,
+            key: `skill-${index}-${skillName}`,
             style: {
               background: "#a78058",
               borderRadius: "50px",
@@ -284,7 +294,7 @@ const allSkills = getTopSkills(user);
               display: "inline-block",
             },
           },
-          name
+          skillName
         );
       })
     )
