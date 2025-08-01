@@ -24,8 +24,8 @@ export async function GET(
     
     // Fetch user data
     const userResponse = await fetch(
-        // `http://localhost:3000/api/internal/user?id=${userId}`,
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/internal/user?id=${userId}`,
+        `http://localhost:3000/api/internal/user?id=${userId}`,
+      // `${process.env.NEXT_PUBLIC_BASE_URL}/api/internal/user?id=${userId}`,
       {
         headers: {
           'User-Agent': 'NextJS-OG-Generator',
@@ -333,13 +333,13 @@ const allSkills = getTopSkills(user);
             {
               style: {
                 position: "absolute",
-                left: "246px",
+                left: "146px",
                 top: "175px",
                 width: "280px",
                 height: "280px",
                 borderRadius: "140px",
-                border: "8px solid white",
-                background: "linear-gradient(135deg, #a78058 0%, #8a6f47 100%)",
+                border: "12px solid white",
+                background: "linear-gradient(135deg, #a78058 0%, #a78058 100%)",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
