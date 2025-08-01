@@ -8,6 +8,7 @@ import Footer from "./_components/Footer";
 import Navbar from "./_components/Navbar";
 import { auth } from "~/server/auth";
 import { SessionProvider } from "next-auth/react";
+import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
   title: "Create T3 App",
@@ -28,6 +29,7 @@ export default async function RootLayout({
     <html lang="en" className={`${geist.variable}`}>
       <body>
         <SessionProvider session={session}>
+          <Toaster/>
           <Navbar session={session} />
           <TRPCReactProvider>{children}</TRPCReactProvider>
           <Footer />
