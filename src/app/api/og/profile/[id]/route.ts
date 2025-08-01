@@ -133,12 +133,12 @@ export async function GET(
         'div',
         {
           style: {
-            width: "100%",
-            height: "100%",
+            width: "1200px",
+            height: "630px",
             display: "flex",
             fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
             position: "relative",
-            overflow: "hidden",
+            background: "#ffffff",
           }
         },
         
@@ -147,10 +147,9 @@ export async function GET(
           'div',
           {
             style: {
-              width: "30%",
-              height: "100%",
+              width: "360px",
+              height: "630px",
               background: "linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%)",
-              position: "relative",
             }
           }
         ),
@@ -158,27 +157,20 @@ export async function GET(
         // Gold border
         React.createElement('div', {
           style: {
-            position: "absolute",
-            left: "30%",
-            top: 0,
             width: "12px",
-            height: "100%",
+            height: "630px",
             background: "linear-gradient(135deg, #d4af37 0%, #b8941f 100%)",
-            zIndex: 1,
           }
         }),
         
-        // White section (70% of width)
+        // White section content
         React.createElement(
           'div',
           {
             style: {
-              width: "70%",
-              height: "100%",
+              width: "828px",
+              height: "630px",
               background: "#ffffff",
-              position: "absolute",
-              right: 0,
-              top: 0,
               display: "flex",
               flexDirection: "column",
               justifyContent: "center",
@@ -198,7 +190,7 @@ export async function GET(
             },
             React.createElement('h1', { 
               style: { 
-                fontSize: "72px", 
+                fontSize: "64px", 
                 margin: 0,
                 fontWeight: "800",
                 lineHeight: 1,
@@ -212,22 +204,22 @@ export async function GET(
                 style: {
                   display: "flex",
                   alignItems: "center",
-                  fontSize: "28px",
+                  fontSize: "24px",
                   color: "#0ea5e9",
                   fontWeight: "500",
                 }
               },
               React.createElement('div', {
                 style: {
-                  width: "36px",
-                  height: "36px",
-                  borderRadius: "50%",
+                  width: "32px",
+                  height: "32px",
+                  borderRadius: "16px",
                   background: "#0ea5e9",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   marginRight: "12px",
-                  fontSize: "18px",
+                  fontSize: "16px",
                 }
               }, '📱'),
               `@${telegramHandle}`
@@ -237,8 +229,8 @@ export async function GET(
           // Course and year
           React.createElement('p', { 
             style: { 
-              fontSize: "36px", 
-              margin: "0 0 40px 0",
+              fontSize: "32px", 
+              margin: "0 0 32px 0",
               color: "#475569",
               fontWeight: "500",
             } 
@@ -251,7 +243,7 @@ export async function GET(
               style: {
                 display: "flex",
                 gap: "16px",
-                marginBottom: "40px",
+                marginBottom: "32px",
                 flexWrap: "wrap",
               }
             },
@@ -263,8 +255,8 @@ export async function GET(
                   style: {
                     background: "#a78058",
                     borderRadius: "50px",
-                    padding: "14px 28px",
-                    fontSize: "22px",
+                    padding: "12px 24px",
+                    fontSize: "20px",
                     fontWeight: "600",
                     color: "white",
                   }
@@ -277,75 +269,69 @@ export async function GET(
           // Intro/description
           React.createElement('p', { 
             style: { 
-              fontSize: "30px", 
+              fontSize: "26px", 
               margin: 0,
               color: "#334155",
               lineHeight: 1.4,
-              maxWidth: "500px",
+              maxWidth: "450px",
             } 
-          }, userIntro),
-          
-          // Bottom branding
+          }, userIntro)
+        ),
+        
+        // Profile photo - positioned absolutely to overlap
+        userImage ? 
+          React.createElement('img', {
+            src: userImage,
+            style: {
+              position: "absolute",
+              left: "246px", // 360 - 140 + 6 (center on gold border)
+              top: "175px", // (630 - 280) / 2
+              width: "280px",
+              height: "280px",
+              borderRadius: "140px",
+              border: "8px solid white",
+              objectFit: "cover",
+              zIndex: "10",
+            }
+          }) :
           React.createElement(
             'div',
             {
               style: {
                 position: "absolute",
-                bottom: "40px",
-                right: "60px",
-                fontSize: "22px",
-                color: "#64748b",
-                fontWeight: "500",
+                left: "246px",
+                top: "175px",
+                width: "280px",
+                height: "280px",
+                borderRadius: "140px",
+                border: "8px solid white",
+                background: "linear-gradient(135deg, #a78058 0%, #8a6f47 100%)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "100px",
+                fontWeight: "bold",
+                color: "white",
+                zIndex: "10",
               }
             },
-            'Created by CampusConnect'
-          )
-        ),
-        
-        // Profile photo - centered on the gold border
+            userName.split(' ').map((n: string) => n[0]).join('').substring(0, 2)
+          ),
+          
+        // Bottom branding
         React.createElement(
           'div',
           {
             style: {
               position: "absolute",
-              left: "calc(30% + 6px - 140px)",
-              top: "50%",
-              transform: "translateY(-50%)",
-              zIndex: 10,
+              bottom: "40px",
+              right: "60px",
+              fontSize: "20px",
+              color: "#64748b",
+              fontWeight: "500",
             }
           },
-          userImage ? 
-            React.createElement('img', {
-              src: userImage,
-              style: {
-                width: "280px",
-                height: "280px",
-                borderRadius: "50%",
-                border: "8px solid white",
-                objectFit: "cover",
-                boxShadow: "0 20px 40px rgba(0, 0, 0, 0.15)",
-              }
-            }) :
-            React.createElement(
-              'div',
-              {
-                style: {
-                  width: "280px",
-                  height: "280px",
-                  borderRadius: "50%",
-                  border: "8px solid white",
-                  background: "linear-gradient(135deg, #a78058 0%, #8a6f47 100%)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: "120px",
-                  fontWeight: "bold",
-                  color: "white",
-                  boxShadow: "0 20px 40px rgba(0, 0, 0, 0.15)",
-                }
-              },
-              userName.split(' ').map((n: string) => n[0]).join('').substring(0, 2)
-            )
+          'Created by CampusConnect'
         )
       ),
       {
