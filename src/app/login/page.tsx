@@ -79,6 +79,14 @@ export default function LoginPage() {
 
               </>
             </Button>
+            <div className="w-full">
+              {error && (
+                <div className="mb-4 rounded border-2 border-black bg-red-200 p-4 text-red-800 shadow-[2px_2px_0px_0px_black]">
+                  {errorMessages[error] ??
+                    "An unexpected error occurred. Please try again."}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -120,15 +128,6 @@ export default function LoginPage() {
             </div>
           </div>
         </Card>
-
-        <div className="w-full">
-          {error && (
-            <div className="mb-4 rounded border-2 border-black bg-red-200 p-4 text-red-800 shadow-[2px_2px_0px_0px_black]">
-              {errorMessages[error] ??
-                "An unexpected error occurred. Please try again."}
-            </div>
-          )}
-        </div>
 
         {/* Collaboration Section */}
         <div className="w-full max-w-sm mb-8">
