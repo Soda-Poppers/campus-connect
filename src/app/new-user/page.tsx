@@ -48,7 +48,7 @@ interface FormData {
   course: string;
   modules: Module[];
   project: string;
-  interests: string;
+  interests: Skill[];
   hardSkills: Skill[];
   softSkills: Skill[];
 }
@@ -100,7 +100,7 @@ const ProfileWelcomeFlow: React.FC = () => {
     course: "",
     modules: [],
     project: "",
-    interests: "",
+    interests: [],
     hardSkills: [],
     softSkills: [],
   });
@@ -439,11 +439,10 @@ const ProfileWelcomeFlow: React.FC = () => {
                 key={key}
                 type="button"
                 onClick={() => updateFormField("course", value)}
-                className={`w-full rounded-xl border-2 p-4 text-left transition-all ${
-                  formData.course === value
+                className={`w-full rounded-xl border-2 p-4 text-left transition-all ${formData.course === value
                     ? "border-blue-500 bg-blue-50 text-blue-700"
                     : "border-gray-200 hover:border-gray-300"
-                }`}
+                  }`}
               >
                 {CourseDisplayNames[value]}
               </button>
@@ -509,39 +508,39 @@ const ProfileWelcomeFlow: React.FC = () => {
                 {/* Search results */}
                 {(moduleResults.length > 0 ||
                   (moduleSearch.length > 0 && !isSearching)) && (
-                  <div className="absolute top-full right-0 left-0 z-10 mt-2 max-h-60 overflow-y-auto rounded-xl border-2 border-gray-200 bg-white shadow-lg">
-                    {moduleResults.map((module) => (
-                      <button
-                        key={module.id}
-                        type="button"
-                        onClick={() => addModule(module)}
-                        className="w-full border-b border-gray-100 p-3 text-left last:border-b-0 hover:bg-gray-50"
-                      >
-                        <div className="font-medium">{module.name}</div>
-                        <div className="text-sm text-gray-600">
-                          {module.classId} • {module.prof}
-                        </div>
-                      </button>
-                    ))}
-
-                    {moduleResults.length === 0 &&
-                      moduleSearch.length > 0 &&
-                      !isSearching && (
+                    <div className="absolute top-full right-0 left-0 z-10 mt-2 max-h-60 overflow-y-auto rounded-xl border-2 border-gray-200 bg-white shadow-lg">
+                      {moduleResults.map((module) => (
                         <button
+                          key={module.id}
                           type="button"
-                          onClick={showCreateNewModuleForm}
-                          className="w-full border-b border-gray-100 p-3 text-left hover:bg-gray-50"
+                          onClick={() => addModule(module)}
+                          className="w-full border-b border-gray-100 p-3 text-left last:border-b-0 hover:bg-gray-50"
                         >
-                          <div className="flex items-center gap-2">
-                            <Plus className="h-4 w-4" />
-                            <span>
-                              Create new module: &quot;{moduleSearch}&quot;
-                            </span>
+                          <div className="font-medium">{module.name}</div>
+                          <div className="text-sm text-gray-600">
+                            {module.classId} • {module.prof}
                           </div>
                         </button>
-                      )}
-                  </div>
-                )}
+                      ))}
+
+                      {moduleResults.length === 0 &&
+                        moduleSearch.length > 0 &&
+                        !isSearching && (
+                          <button
+                            type="button"
+                            onClick={showCreateNewModuleForm}
+                            className="w-full border-b border-gray-100 p-3 text-left hover:bg-gray-50"
+                          >
+                            <div className="flex items-center gap-2">
+                              <Plus className="h-4 w-4" />
+                              <span>
+                                Create new module: &quot;{moduleSearch}&quot;
+                              </span>
+                            </div>
+                          </button>
+                        )}
+                    </div>
+                  )}
               </div>
             )}
 
@@ -663,17 +662,12 @@ const ProfileWelcomeFlow: React.FC = () => {
       case "interests":
         return (
           <div className="space-y-4">
-            <textarea
-              placeholder="What are your hobbies, interests, or passions?"
-              value={formData.interests}
-              onChange={(e) => updateFormField("interests", e.target.value)}
-              className="w-full resize-none rounded-xl border-2 border-gray-200 px-4 py-3 text-lg transition-colors focus:border-blue-500 focus:outline-none"
-              rows={4}
-              autoFocus
+            <SkillInput
+              label="Interests"
+              skills={formData.interests}
+              onChange={(skills) => updateFormField("interests", skills)}
+              placeholder="Type an interest and press Enter"
             />
-            <p className="text-sm text-gray-500">
-              This section is optional - you can skip it and fill it later.
-            </p>
           </div>
         );
 

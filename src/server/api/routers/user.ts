@@ -6,9 +6,9 @@
 import { z } from "zod";
 
 import {
-    createTRPCRouter,
-    protectedProcedure,
-    publicProcedure,
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
 } from "~/server/api/trpc";
 
 
@@ -38,29 +38,29 @@ const skillArraySchema = z
     });
   })
   .optional();
-  
+
 export const userRouter = createTRPCRouter({
 
-    didUserFinishWelcome: protectedProcedure    .query(async ({ ctx}) => {
+  didUserFinishWelcome: protectedProcedure.query(async ({ ctx }) => {
 
-      if (!ctx.session.user){ 
-       throw new TRPCError({ code: "UNAUTHORIZED" });
-      }
-      const user = await ctx.db.user.findUnique({
+    if (!ctx.session.user) {
+      throw new TRPCError({ code: "UNAUTHORIZED" });
+    }
+    const user = await ctx.db.user.findUnique({
 
-        where: { id: ctx.session?.user.id },
-      select:{ 
+      where: { id: ctx.session?.user.id },
+      select: {
         id: true,
         enrollmentYear: true
       }
-      });
+    });
 
-      if (!user?.enrollmentYear ) { 
-        return null
-      }
-      return user;
-    }),
-    getUser: protectedProcedure
+    if (!user?.enrollmentYear) {
+      return null
+    }
+    return user;
+  }),
+  getUser: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
       const user = await ctx.db.user.findUnique({
@@ -78,7 +78,7 @@ export const userRouter = createTRPCRouter({
       return user;
     }),
 
-     getUserCard: protectedProcedure
+  getUserCard: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
       const user = await ctx.db.user.findUnique({
@@ -89,7 +89,7 @@ export const userRouter = createTRPCRouter({
               module: true,
             },
           }
-      
+
         },
       });
 
@@ -116,39 +116,39 @@ export const userRouter = createTRPCRouter({
 
   // Create User
   create: publicProcedure
-  .input(z.object({
-    name: z.string().min(1).optional(),
-    enrollmentYear: z.number().int().min(1900).max(2030).optional(),
-    course: z.nativeEnum(Course).optional(),
-    modules: z.array(z.object({
-      id: z.string(),
-      name: z.string(),
-      classId: z.string(),
-      prof: z.string(),
-      isNew: z.boolean().optional(),
-    })).optional(),
-    project: z.string().optional(),
-    interests: z.string().optional(),
-    hardSkills: skillArraySchema,
-  softSkills: skillArraySchema
-  }))
-  .mutation(async ({ input, ctx }) => {
+    .input(z.object({
+      name: z.string().min(1).optional(),
+      enrollmentYear: z.number().int().min(1900).max(2030).optional(),
+      course: z.nativeEnum(Course).optional(),
+      modules: z.array(z.object({
+        id: z.string(),
+        name: z.string(),
+        classId: z.string(),
+        prof: z.string(),
+        isNew: z.boolean().optional(),
+      })).optional(),
+      project: z.string().optional(),
+      interests: skillArraySchema,
+      hardSkills: skillArraySchema,
+      softSkills: skillArraySchema
+    }))
+    .mutation(async ({ input, ctx }) => {
 
-    console.log(">>>INPUT RECEIVED", input)
-    const userId = ctx.session?.user.id;
-    if (!userId) throw new Error("Not authenticated");
+      console.log(">>>INPUT RECEIVED", input)
+      const userId = ctx.session?.user.id;
+      if (!userId) throw new Error("Not authenticated");
 
-    const data: any = {};
+      const data: any = {};
 
-    if (input.name !== undefined && input.name !== "") data.name = input.name;
-    if (input.enrollmentYear !== undefined) data.enrollmentYear = input.enrollmentYear;
-    if (input.course !== undefined) data.course = input.course;
-    if (input.project !== undefined) {
-      data.project = input.project === "" ? null : input.project;
-    }
-    if (input.interests !== undefined) {
-      data.interest = input.interests === "" ? null : input.interests;
-    }
+      if (input.name !== undefined && input.name !== "") data.name = input.name;
+      if (input.enrollmentYear !== undefined) data.enrollmentYear = input.enrollmentYear;
+      if (input.course !== undefined) data.course = input.course;
+      if (input.project !== undefined) {
+        data.project = input.project === "" ? null : input.project;
+      }
+      if (input.interests && input.interests.length > 0) {
+        data.interest = input.interests;
+      }
       if (input.hardSkills && input.hardSkills.length > 0) {
         data.hardSkills = input.hardSkills;
       }
@@ -157,84 +157,84 @@ export const userRouter = createTRPCRouter({
       }
 
 
-    if (input.modules && input.modules.length > 0) {
-      // First, clear existing module connections for this user
-      await ctx.db.modulesOnUsers.deleteMany({
-        where: { userId },
-      });
+      if (input.modules && input.modules.length > 0) {
+        // First, clear existing module connections for this user
+        await ctx.db.modulesOnUsers.deleteMany({
+          where: { userId },
+        });
 
-      // Process each module: create if doesn't exist, then connect to user
-      for (const moduleInput of input.modules) {
-        // Check if this is a new module (client-generated ID starting with "new-")
-        const isNewModule = moduleInput.id.startsWith("new-") || moduleInput.isNew;
-        
-        let moduleId: string;
+        // Process each module: create if doesn't exist, then connect to user
+        for (const moduleInput of input.modules) {
+          // Check if this is a new module (client-generated ID starting with "new-")
+          const isNewModule = moduleInput.id.startsWith("new-") || moduleInput.isNew;
 
-        if (isNewModule) {
-          // For new modules, use upsert to avoid duplicates based on classId
-          const mod = await ctx.db.modules.upsert({
-            where: { classId: moduleInput.classId },
-            update: {
-              name: moduleInput.name,
-              prof: moduleInput.prof,
-            },
-            create: {
-              name: moduleInput.name,
-              classId: moduleInput.classId,
-              prof: moduleInput.prof,
+          let moduleId: string;
+
+          if (isNewModule) {
+            // For new modules, use upsert to avoid duplicates based on classId
+            const mod = await ctx.db.modules.upsert({
+              where: { classId: moduleInput.classId },
+              update: {
+                name: moduleInput.name,
+                prof: moduleInput.prof,
+              },
+              create: {
+                name: moduleInput.name,
+                classId: moduleInput.classId,
+                prof: moduleInput.prof,
+              },
+            });
+            moduleId = mod.id;
+          } else {
+            // For existing modules, just use the provided ID
+            moduleId = moduleInput.id;
+          }
+
+          // Create the connection between user and module
+          await ctx.db.modulesOnUsers.create({
+            data: {
+              userId,
+              moduleId,
             },
           });
-          moduleId = mod.id;
-        } else {
-          // For existing modules, just use the provided ID
-          moduleId = moduleInput.id;
         }
-
-        // Create the connection between user and module
-        await ctx.db.modulesOnUsers.create({
-          data: {
-            userId,
-            moduleId,
-          },
-        });
       }
-    }
 
-    const user = await ctx.db.user.update({
-      where: { id: userId },
-      data,
-      include: {
-        Modules: {
-          include: {
-            module: true,
+      const user = await ctx.db.user.update({
+        where: { id: userId },
+        data,
+        include: {
+          Modules: {
+            include: {
+              module: true,
+            },
           },
         },
-      },
-    });
+      });
 
-    return user;
-  }),
-//   createUser: publicProcedure
-//     .input(z.object({
-//       name: z.string().min(1),
-//       email: z.string().email(),
-//       pwdHash: z.string(),
-//       enrollmentYear: z.number(),
-//       course: z.nativeEnum(Course),
-//       intro: z.string().default(""),
-//       hardSkills: z.any().default({}),
-//       softSkills: z.any().default({}),
-//       project: z.any().default({}),
-//       interest: z.any().default({}),
-//       socialMedia: z.any().default({}),
-//     }))
-//     .mutation(async ({ ctx, input }) => {
-//       const user = await ctx.db.user.create({
-//         data: input,
-//       });
+      return user;
+    }),
+  //   createUser: publicProcedure
+  //     .input(z.object({
+  //       name: z.string().min(1),
+  //       email: z.string().email(),
+  //       pwdHash: z.string(),
+  //       enrollmentYear: z.number(),
+  //       course: z.nativeEnum(Course),
+  //       intro: z.string().default(""),
+  //       hardSkills: z.any().default({}),
+  //       softSkills: z.any().default({}),
+  //       project: z.any().default({}),
+  //       interest: z.any().default({}),
+  //       socialMedia: z.any().default({}),
+  //     }))
+  //     .mutation(async ({ ctx, input }) => {
+  //       const user = await ctx.db.user.create({
+  //         data: input,
+  //       });
 
-//       return user;
-//     }),
+  //       return user;
+  //     }),
 
   // Edit User (full profile update)
   editUser: protectedProcedure
@@ -428,7 +428,7 @@ export const userRouter = createTRPCRouter({
 
     // Sort by number of shared modules (optional enhancement)
     const usersWithSharedCount = usersWithSameModules.map(user => {
-      const sharedModules = user.Modules.filter(userModule => 
+      const sharedModules = user.Modules.filter(userModule =>
         moduleIds.includes(userModule.moduleId)
       );
       return {
@@ -442,6 +442,6 @@ export const userRouter = createTRPCRouter({
     usersWithSharedCount.sort((a, b) => b.sharedModulesCount - a.sharedModulesCount);
 
     return usersWithSharedCount;
-  }), 
+  }),
 
 });
