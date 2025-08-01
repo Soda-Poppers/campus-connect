@@ -24,8 +24,8 @@ export async function GET(
     
     // Fetch user data
     const userResponse = await fetch(
-        `http://localhost:3000/api/internal/user?id=${userId}`,
-      // `${process.env.NEXT_PUBLIC_BASE_URL}/api/internal/user?id=${userId}`,
+        // `http://localhost:3000/api/internal/user?id=${userId}`,
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/internal/user?id=${userId}`,
       {
         headers: {
           'User-Agent': 'NextJS-OG-Generator',
