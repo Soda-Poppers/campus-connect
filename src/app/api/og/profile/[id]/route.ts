@@ -4,48 +4,12 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+
 import type { User } from "@prisma/client";
 import { ImageResponse } from "next/og";
 import { NextRequest } from "next/server";
 import React from "react";
 import type { Skill } from "~/types/skills";
-
-const getAcademicYearLabel = (enrollmentYear?: number | string) => {
-  console.log("enrollmentYear>>", enrollmentYear);
-  if (!enrollmentYear) return "";
-  const year =
-    typeof enrollmentYear === "string"
-      ? parseInt(enrollmentYear, 10)
-      : enrollmentYear;
-  if (isNaN(year)) return "";
-  const currentYear = new Date().getFullYear();
-
-  if (year > currentYear) {
-    return `Pre-graduate (${year})`;
-  }
-  if (currentYear - year >= 6) {
-    return `Alumni (${year})`;
-  }
-  const yearNumber = currentYear - year + 1;
-  return `Y${yearNumber}`;
-};
-
-// Helper function to validate image URL
-const isValidImageUrl = (url: string): boolean => {
-  if (!url) return false;
-  try {
-    const urlObj = new URL(url);
-    return urlObj.protocol === 'https:' && 
-           (url.includes('cloudinary.com') || 
-            url.includes('amazonaws.com') || 
-            url.includes('googleapis.com') ||
-            url.includes('github.com') ||
-            url.includes('gravatar.com') ||
-            url.includes('vercel.com'));
-  } catch {
-    return false;
-  }
-};
 
 export const runtime = "edge";
 
@@ -60,6 +24,7 @@ export async function GET(
     
     // Fetch user data
     const userResponse = await fetch(
+        // `http://localhost:3000/api/internal/user?id=${userId}`,
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/internal/user?id=${userId}`,
       {
         headers: {
@@ -108,7 +73,7 @@ export async function GET(
 
     const user = await userResponse.json();
     console.log('OG: User data received:', !!user?.name);
-  
+    
     if (!user?.name) {
       console.log('OG: No user name found');
       return new ImageResponse(
@@ -152,44 +117,33 @@ export async function GET(
     const userCourse = user.course ? 
       user.course.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, (char: string) => char.toUpperCase()) : 
       'Computer Science';
-    const userYear = getAcademicYearLabel(user.enrollmentYear)
+    const userYear = user.enrollmentYear ? `Y${user.enrollmentYear}` : 'Y1';
     const userIntro = user.intro ?? 'Passionate student ready to connect and collaborate!';
-    const rawUserImage = user.image ?? '';
+    const userImage = user.image ?? '';
     
-    // Validate image URL
-    const userImage = isValidImageUrl(rawUserImage) ? rawUserImage : '';
-    console.log('OG: Image URL:', rawUserImage);
-    console.log('OG: Image URL valid:', !!userImage);
-    
-    type MaybeSkill = Skill | string | undefined;
-    const getTopSkills = (user: any, limit = 3): MaybeSkill[] => {
-      const hard: MaybeSkill[] = Array.isArray(user.hardSkills) ? user.hardSkills.slice(0, limit) : [];
-      const soft: MaybeSkill[] = Array.isArray(user.softSkills)
-        ? user.softSkills.slice(0, Math.max(0, limit - hard.length))
-        : [];
-      const combined = [...hard, ...soft].slice(0, limit);
-      
-      console.log('OG: Hard skills:', hard);
-      console.log('OG: Soft skills:', soft);
-      console.log('OG: Combined skills:', combined);
-      
-      return combined;
-    };
+type MaybeSkill = Skill | string | undefined;
+const getTopSkills = (user: any, limit = 3): MaybeSkill[] => {
+  const hard: MaybeSkill[] = Array.isArray(user.hardSkills) ? user.hardSkills.slice(0, limit) : [];
+  const soft: MaybeSkill[] = Array.isArray(user.softSkills)
+    ? user.softSkills.slice(0, Math.max(0, limit - hard.length))
+    : [];
+  const combined = [...hard, ...soft].slice(0, limit);
+  
+  // Debug logging
+  console.log('OG: Hard skills:', hard);
+  console.log('OG: Soft skills:', soft);
+  console.log('OG: Combined skills:', combined);
+  
+  return combined;
+};
 
-    const allSkills = getTopSkills(user);
-    
+const allSkills = getTopSkills(user);
     // Extract social media - find telegram
     const socialMedia = user.socialMedia ?? [];
     const telegramAccount = socialMedia.find((s: any) => s.platform === 'telegram');
     const telegramHandle = telegramAccount?.username ?? '';
 
-    // Generate initials for fallback avatar
-    const initials = userName
-      .split(' ')
-      .map((n: string) => n[0])
-      .join('')
-      .substring(0, 2)
-      .toUpperCase();
+    
 
     // Main namecard-style profile image
     return new ImageResponse(
@@ -200,59 +154,22 @@ export async function GET(
             width: "1200px",
             height: "630px",
             display: "flex",
-            fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+            fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
+            position: "relative",
             background: "#ffffff",
           }
         },
         
-        // Dark blue section
+     
         React.createElement(
           'div',
           {
             style: {
               width: "260px",
               height: "630px",
-              background: "#151b4d",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
+              background: "linear-gradient(135deg, #151b4d 0%, #151b4d 100%)",
             }
-          },
-          
-          // Profile photo or avatar - MOVED INSIDE BLUE SECTION
-          userImage ? 
-            React.createElement('img', {
-              src: userImage,
-              alt: userName,
-              style: {
-                width: "200px",
-                height: "200px",
-                borderRadius: "100px",
-                border: "6px solid white",
-                objectFit: "cover",
-                boxShadow: "0 8px 24px rgba(0,0,0,0.3)",
-              }
-            }) :
-            React.createElement(
-              'div',
-              {
-                style: {
-                  width: "200px",
-                  height: "200px",
-                  borderRadius: "100px",
-                  border: "6px solid white",
-                  background: "linear-gradient(135deg, #a78058 0%, #8a6f47 100%)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: "80px",
-                  fontWeight: "bold",
-                  color: "white",
-                  boxShadow: "0 8px 24px rgba(0,0,0,0.3)",
-                }
-              },
-              initials
-            )
+          }
         ),
         
         // Gold border
@@ -260,7 +177,7 @@ export async function GET(
           style: {
             width: "32px",
             height: "630px",
-            background: "#8a704d",
+            background: "linear-gradient(135deg, #8a704d 0%, #8a704d 100%)",
           }
         }),
         
@@ -275,7 +192,7 @@ export async function GET(
               display: "flex",
               flexDirection: "column",
               justifyContent: "center",
-              padding: "60px",
+              padding: "60px 60px 60px 180px",
             }
           },
           
@@ -287,16 +204,16 @@ export async function GET(
                 display: "flex",
                 alignItems: "center",
                 marginBottom: "16px",
-                flexWrap: "wrap",
-                gap: "16px",
               }
             },
             React.createElement('h1', { 
               style: { 
-                fontSize: "56px", 
+                fontSize: "84px", 
                 margin: 0,
-                fontWeight: "900",
-                lineHeight: 1.1,
+             fontFamily: "sans-serif",
+              fontWeight: "bold",
+                lineHeight: 1,
+                marginRight: "24px",
                 color: "#1e293b",
               } 
             }, userName),
@@ -306,18 +223,22 @@ export async function GET(
                 style: {
                   display: "flex",
                   alignItems: "center",
-                  fontSize: "22px",
+                  fontSize: "24px",
                   color: "#0ea5e9",
-                  fontWeight: "600",
-                  background: "#e0f2fe",
-                  padding: "8px 16px",
-                  borderRadius: "24px",
+                  fontWeight: "500",
                 }
               },
               React.createElement('div', {
                 style: {
-                  marginRight: "8px",
-                  fontSize: "18px",
+                  width: "32px",
+                  height: "32px",
+                  borderRadius: "16px",
+                  background: "#0ea5e9",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginRight: "12px",
+                  fontSize: "16px",
                 }
               }, '📱'),
               `@${telegramHandle}`
@@ -327,67 +248,109 @@ export async function GET(
           // Course and year
           React.createElement('p', { 
             style: { 
-              fontSize: "30px", 
-              margin: "0 0 24px 0",
+              fontSize: "32px", 
+              margin: "0 0 32px 0",
               color: "#475569",
-              fontWeight: "600",
+              fontWeight: "500",
             } 
           }, `SMU ${userCourse} ${userYear}`),
           
-          // Skills
-          allSkills.length > 0
-            ? React.createElement(
-                'div',
-                {
-                  style: {
-                    display: "flex",
-                    gap: "12px",
-                    marginBottom: "32px",
-                    flexWrap: "wrap",
-                  },
-                },
-                ...allSkills.map((skill: MaybeSkill, index: number) => {
-                  let skillName: string;
-                  
-                  if (typeof skill === "string") {
-                    skillName = skill;
-                  } else if (skill && typeof skill === "object" && "skillName" in skill) {
-                    skillName = (skill as any).skillName ?? "Unknown";
-                  } else {
-                    skillName = "Unknown";
-                  }
+        allSkills.length > 0
+  ? React.createElement(
+      'div',
+      {
+        style: {
+          display: "flex",
+          gap: "16px",
+          marginBottom: "32px",
+          flexWrap: "wrap",
+        },
+      },
+      ...allSkills.map((skill: MaybeSkill, index: number) => {
+        // Handle both object format {skillName: "..."} and string format
+        let skillName: string;
+        
+        if (typeof skill === "string") {
+          skillName = skill;
+        } else if (skill && typeof skill === "object" && "skillName" in skill) {
+          skillName = (skill as any).skillName ?? "Unknown";
+        } else {
+          skillName = "Unknown";
+        }
 
-                  return React.createElement(
-                    'div',
-                    {
-                      key: `skill-${index}-${skillName}`,
-                      style: {
-                        background: "#a78058",
-                        borderRadius: "20px",
-                        padding: "10px 20px",
-                        fontSize: "18px",
-                        fontWeight: 600,
-                        color: "white",
-                        display: "inline-block",
-                      },
-                    },
-                    skillName
-                  );
-                })
-              )
-            : null,
-          
+        // Debug logging
+        console.log(`OG: Processing skill ${index}:`, skill, '-> name:', skillName);
+
+        return React.createElement(
+          'div',
+          {
+            key: `skill-${index}-${skillName}`,
+            style: {
+              background: "#a78058",
+              borderRadius: "70px",
+              padding: "8px 16px",
+              fontSize: "24px",
+              fontWeight: 600,
+              color: "white",
+              display: "block",
+            },
+          },
+          skillName
+        );
+      })
+    )
+  : null,
           // Intro/description
           React.createElement('p', { 
             style: { 
-              fontSize: "24px", 
+              fontSize: "28px", 
               margin: 0,
               color: "#334155",
               lineHeight: 1.4,
-              fontWeight: "400",
+              maxWidth: "450px",
             } 
-          }, userIntro.length > 120 ? userIntro.substring(0, 120) + '...' : userIntro)
+          }, userIntro)
         ),
+        
+        // Profile photo - positioned absolutely to overlap
+        userImage ? 
+          React.createElement('img', {
+            src: userImage,
+            style: {
+              position: "absolute",
+              left: "146px", // 360 - 140 + 6 (center on gold border)
+              top: "175px", // (630 - 280) / 2
+              width: "280px",
+              height: "280px",
+              borderRadius: "140px",
+              border: "12px solid white",
+              objectFit: "cover",
+              zIndex: "10",
+            }
+          }) :
+          React.createElement(
+            'div',
+            {
+              style: {
+                position: "absolute",
+                left: "246px",
+                top: "175px",
+                width: "280px",
+                height: "280px",
+                borderRadius: "140px",
+                border: "8px solid white",
+                background: "linear-gradient(135deg, #a78058 0%, #8a6f47 100%)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                fontSize: "100px",
+                fontWeight: "bold",
+                color: "white",
+                zIndex: "10",
+              }
+            },
+            userName.split(' ').map((n: string) => n[0]).join('').substring(0, 2)
+          ),
           
         // Bottom branding
         React.createElement(
@@ -395,11 +358,16 @@ export async function GET(
           {
             style: {
               position: "absolute",
-              bottom: "30px",
+              bottom: "40px",
               right: "60px",
-              fontSize: "18px",
-              color: "#94a3b8",
-              fontWeight: "500",
+              fontSize: "20px",
+              color: "#64748b",
+              fontWeight: "700",
+              borderRadius:"10px",
+              padding:"2px 5px",
+         
+              backgroundColor: "#EDEDED"
+
             }
           },
           'CampusConnect'
