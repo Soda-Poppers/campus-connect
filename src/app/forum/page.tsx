@@ -18,10 +18,7 @@ import {
 const ForumPage = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [showCreatePost, setShowCreatePost] = useState(false);
-<<<<<<< HEAD
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
-=======
->>>>>>> 5f76c57 (create forum page)
     const [newPost, setNewPost] = useState({
         title: '',
         description: '',
@@ -175,24 +172,11 @@ ${senderName}`;
         }
     };
 
-<<<<<<< HEAD
     const filteredPosts = posts.filter((post) =>
         (selectedCategory === null || post.category === selectedCategory) &&
         post.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
-=======
-    const filteredPosts = posts.filter(post => {
-        if (!searchQuery) return true;
-        const query = searchQuery.toLowerCase();
-        return (
-            post.title.toLowerCase().includes(query) ||
-            post.description.toLowerCase().includes(query) ||
-            post.category.toLowerCase().includes(query) ||
-            post.author.name.toLowerCase().includes(query)
-        );
-    });
->>>>>>> 5f76c57 (create forum page)
 
     return (
         <div className="h-full container mx-auto overflow-y-auto safe-area-top">
@@ -224,11 +208,7 @@ ${senderName}`;
                                         ].map((cat) => (
                                             <Button
                                                 key={cat.value}
-<<<<<<< HEAD
                                                 variant={newPost.category === cat.value ? 'secondary' : 'outline'}
-=======
-                                                variant={newPost.category === cat.value ? 'default' : 'outline'}
->>>>>>> 5f76c57 (create forum page)
                                                 onClick={() => setNewPost(prev => ({ ...prev, category: cat.value }))}
                                                 className={newPost.category === cat.value ? 'text-sm text-white' : 'text-sm'}
                                             >
@@ -293,7 +273,6 @@ ${senderName}`;
                     />
                 </div>
 
-<<<<<<< HEAD
                 {/* Category Filter */}
                 <div className="flex flex-wrap gap-2 mb-5">
                     {[
@@ -314,8 +293,6 @@ ${senderName}`;
                     ))}
                 </div>
 
-=======
->>>>>>> 5f76c57 (create forum page)
                 {/* Posts */}
                 <div className="space-y-4">
                     {filteredPosts.map((post) => (
