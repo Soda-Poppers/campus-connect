@@ -4,33 +4,31 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-
 import type { User } from "@prisma/client";
 import { ImageResponse } from "next/og";
 import { NextRequest } from "next/server";
 import React from "react";
 import type { Skill } from "~/types/skills";
 
+const getAcademicYearLabel = (enrollmentYear?: number | string) => {
+  console.log("enrollmentYear>>", enrollmentYear);
+  if (!enrollmentYear) return "";
+  const year =
+    typeof enrollmentYear === "string"
+      ? parseInt(enrollmentYear, 10)
+      : enrollmentYear;
+  if (isNaN(year)) return "";
+  const currentYear = new Date().getFullYear();
 
-  const getAcademicYearLabel = (enrollmentYear?: number | string) => {
-    console.log("enrollmentYear>>", enrollmentYear);
-    if (!enrollmentYear) return "";
-    const year =
-      typeof enrollmentYear === "string"
-        ? parseInt(enrollmentYear, 10)
-        : enrollmentYear;
-    if (isNaN(year)) return "";
-    const currentYear = new Date().getFullYear();
-
-    if (year > currentYear) {
-      return `Pre-graduate (${year})`;
-    }
-    if (currentYear - year >= 6) {
-      return `Alumni (${year})`;
-    }
-    const yearNumber = currentYear - year + 1;
-    return `Y${yearNumber}`;
-  };
+  if (year > currentYear) {
+    return `Pre-graduate (${year})`;
+  }
+  if (currentYear - year >= 6) {
+    return `Alumni (${year})`;
+  }
+  const yearNumber = currentYear - year + 1;
+  return `Y${yearNumber}`;
+};
 
 export const runtime = "edge";
 
@@ -54,8 +52,6 @@ export async function GET(
     );
     
     console.log('OG: Response status:', userResponse.status);
-
-    
     
     if (!userResponse.ok) {
       console.log('OG: User fetch failed');
@@ -96,7 +92,6 @@ export async function GET(
     const user = await userResponse.json();
     console.log('OG: User data received:', !!user?.name);
   
-    
     if (!user?.name) {
       console.log('OG: No user name found');
       return new ImageResponse(
@@ -144,29 +139,27 @@ export async function GET(
     const userIntro = user.intro ?? 'Passionate student ready to connect and collaborate!';
     const userImage = user.image ?? '';
     
-type MaybeSkill = Skill | string | undefined;
-const getTopSkills = (user: any, limit = 3): MaybeSkill[] => {
-  const hard: MaybeSkill[] = Array.isArray(user.hardSkills) ? user.hardSkills.slice(0, limit) : [];
-  const soft: MaybeSkill[] = Array.isArray(user.softSkills)
-    ? user.softSkills.slice(0, Math.max(0, limit - hard.length))
-    : [];
-  const combined = [...hard, ...soft].slice(0, limit);
-  
-  // Debug logging
-  console.log('OG: Hard skills:', hard);
-  console.log('OG: Soft skills:', soft);
-  console.log('OG: Combined skills:', combined);
-  
-  return combined;
-};
+    type MaybeSkill = Skill | string | undefined;
+    const getTopSkills = (user: any, limit = 3): MaybeSkill[] => {
+      const hard: MaybeSkill[] = Array.isArray(user.hardSkills) ? user.hardSkills.slice(0, limit) : [];
+      const soft: MaybeSkill[] = Array.isArray(user.softSkills)
+        ? user.softSkills.slice(0, Math.max(0, limit - hard.length))
+        : [];
+      const combined = [...hard, ...soft].slice(0, limit);
+      
+      console.log('OG: Hard skills:', hard);
+      console.log('OG: Soft skills:', soft);
+      console.log('OG: Combined skills:', combined);
+      
+      return combined;
+    };
 
-const allSkills = getTopSkills(user);
+    const allSkills = getTopSkills(user);
+    
     // Extract social media - find telegram
     const socialMedia = user.socialMedia ?? [];
     const telegramAccount = socialMedia.find((s: any) => s.platform === 'telegram');
     const telegramHandle = telegramAccount?.username ?? '';
-
-    
 
     // Main namecard-style profile image
     return new ImageResponse(
@@ -183,7 +176,7 @@ const allSkills = getTopSkills(user);
           }
         },
         
-     
+        // Dark blue section
         React.createElement(
           'div',
           {
@@ -191,6 +184,7 @@ const allSkills = getTopSkills(user);
               width: "260px",
               height: "630px",
               background: "linear-gradient(135deg, #151b4d 0%, #151b4d 100%)",
+              position: "relative",
             }
           }
         ),
@@ -201,6 +195,7 @@ const allSkills = getTopSkills(user);
             width: "32px",
             height: "630px",
             background: "linear-gradient(135deg, #8a704d 0%, #8a704d 100%)",
+            position: "relative",
           }
         }),
         
@@ -216,6 +211,7 @@ const allSkills = getTopSkills(user);
               flexDirection: "column",
               justifyContent: "center",
               padding: "60px 60px 60px 120px",
+              position: "relative",
             }
           },
           
@@ -277,48 +273,49 @@ const allSkills = getTopSkills(user);
             } 
           }, `SMU ${userCourse} ${userYear}`),
           
-        allSkills.length > 0
-  ? React.createElement(
-      'div',
-      {
-        style: {
-          display: "flex",
-          gap: "16px",
-          marginBottom: "32px",
-          flexWrap: "wrap",
-        },
-      },
-      ...allSkills.map((skill: MaybeSkill, index: number) => {
-        // Handle both object format {skillName: "..."} and string format
-        let skillName: string;
-        
-        if (typeof skill === "string") {
-          skillName = skill;
-        } else if (skill && typeof skill === "object" && "skillName" in skill) {
-          skillName = (skill as any).skillName ?? "Unknown";
-        } else {
-          skillName = "Unknown";
-        }
+          // Skills
+          allSkills.length > 0
+            ? React.createElement(
+                'div',
+                {
+                  style: {
+                    display: "flex",
+                    gap: "16px",
+                    marginBottom: "32px",
+                    flexWrap: "wrap",
+                  },
+                },
+                ...allSkills.map((skill: MaybeSkill, index: number) => {
+                  let skillName: string;
+                  
+                  if (typeof skill === "string") {
+                    skillName = skill;
+                  } else if (skill && typeof skill === "object" && "skillName" in skill) {
+                    skillName = (skill as any).skillName ?? "Unknown";
+                  } else {
+                    skillName = "Unknown";
+                  }
 
-        return React.createElement(
-          'div',
-          {
-            key: `skill-${index}-${skillName}`,
-            style: {
-              background: "#a78058",
-              borderRadius: "50px",
-              padding: "12px 24px",
-              fontSize: "20px",
-              fontWeight: 600,
-              color: "white",
-              display: "inline-block",
-            },
-          },
-          skillName
-        );
-      })
-    )
-  : null,
+                  return React.createElement(
+                    'div',
+                    {
+                      key: `skill-${index}-${skillName}`,
+                      style: {
+                        background: "#a78058",
+                        borderRadius: "50px",
+                        padding: "12px 24px",
+                        fontSize: "20px",
+                        fontWeight: 600,
+                        color: "white",
+                        display: "inline-block",
+                      },
+                    },
+                    skillName
+                  );
+                })
+              )
+            : null,
+          
           // Intro/description
           React.createElement('p', { 
             style: { 
@@ -331,20 +328,21 @@ const allSkills = getTopSkills(user);
           }, userIntro)
         ),
         
-        // Profile photo - positioned absolutely to overlap
+        // Profile photo - FIXED positioning
         userImage ? 
           React.createElement('img', {
             src: userImage,
+            alt: userName,
             style: {
               position: "absolute",
-              left: "199px", // 360 - 140 + 6 (center on gold border)
-              top: "175px", // (630 - 280) / 2
+              left: "146px", // Fixed calculation: 260 - 140 (half of image width) + 16 (offset for gold border)
+              top: "175px", // Centered vertically
               width: "280px",
               height: "280px",
               borderRadius: "140px",
-              border: "12px solid white",
+              border: "8px solid white",
               objectFit: "cover",
-              zIndex: "10",
+              boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
             }
           }) :
           React.createElement(
@@ -352,7 +350,7 @@ const allSkills = getTopSkills(user);
             {
               style: {
                 position: "absolute",
-                left: "246px",
+                left: "146px", // Same as image positioning
                 top: "175px",
                 width: "280px",
                 height: "280px",
@@ -365,7 +363,7 @@ const allSkills = getTopSkills(user);
                 fontSize: "100px",
                 fontWeight: "bold",
                 color: "white",
-                zIndex: "10",
+                boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
               }
             },
             userName.split(' ').map((n: string) => n[0]).join('').substring(0, 2)
