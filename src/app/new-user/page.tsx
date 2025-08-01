@@ -368,7 +368,7 @@ const ProfileWelcomeFlow: React.FC = () => {
               placeholder="Enter your full name"
               value={formData.name}
               onChange={(e) => updateFormField("name", e.target.value)}
-              className="w-full rounded-xl border-2 border-gray-200 px-4 py-3 text-lg transition-colors focus:border-blue-500 focus:outline-none"
+              className="w-full rounded-xl border-2 border-gray-200 px-4 py-3 text-lg transition-colors focus:border-primary focus:outline-none"
               autoFocus
             />
           </div>
@@ -406,7 +406,7 @@ const ProfileWelcomeFlow: React.FC = () => {
                   updateFormField("enrollmentYear", clamped.toString());
                 }
               }}
-              className="w-full rounded-xl border-2 border-gray-200 px-4 py-3 text-lg transition-colors focus:border-blue-500 focus:outline-none"
+              className="w-full rounded-xl border-2 border-gray-200 px-4 py-3 text-lg transition-colors focus:border-primary-500 focus:outline-none"
               autoFocus
             />
             {formData.enrollmentYear &&
@@ -441,7 +441,7 @@ const ProfileWelcomeFlow: React.FC = () => {
                 onClick={() => updateFormField("course", value)}
                 className={`w-full rounded-xl border-2 p-4 text-left transition-all ${
                   formData.course === value
-                    ? "border-blue-500 bg-blue-50 text-blue-700"
+                    ? "border-primary  bg-primary text-white"
                     : "border-gray-200 hover:border-gray-300"
                 }`}
               >
@@ -464,12 +464,12 @@ const ProfileWelcomeFlow: React.FC = () => {
                   {formData.modules.map((module) => (
                     <div
                       key={module.id}
-                      className="flex items-center gap-2 rounded-lg bg-blue-100 px-3 py-2 text-blue-800"
+                      className="flex items-center gap-2 rounded-lg bg-primary px-3 py-2 text-white "
                     >
                       <span className="text-sm">
                         <span className="font-medium">{module.name}</span>
                         {module.classId && (
-                          <span className="text-blue-600">
+                          <span className="text-primary ">
                             {" "}
                             ({module.classId})
                           </span>
@@ -481,7 +481,7 @@ const ProfileWelcomeFlow: React.FC = () => {
                       <button
                         type="button"
                         onClick={() => removeModule(module.id)}
-                        className="text-blue-600 hover:text-blue-800"
+                        className="text-primary-600 hover:text-primary-800"
                         aria-label={`Remove ${module.name}`}
                       >
                         <X className="h-4 w-4" />
@@ -502,7 +502,7 @@ const ProfileWelcomeFlow: React.FC = () => {
                     placeholder="Search for modules..."
                     value={moduleSearch}
                     onChange={(e) => setModuleSearch(e.target.value)}
-                    className="w-full rounded-xl border-2 border-gray-200 py-3 pr-4 pl-10 text-lg transition-colors focus:border-blue-500 focus:outline-none"
+                    className="w-full rounded-xl border-2 border-gray-200 py-3 pr-4 pl-10 text-lg transition-colors focus:border-primary-500 focus:outline-none"
                   />
                 </div>
 
@@ -547,8 +547,8 @@ const ProfileWelcomeFlow: React.FC = () => {
 
             {/* New Module Form */}
             {showNewModuleForm && (
-              <div className="rounded-xl border-2 border-blue-200 bg-blue-50 p-4">
-                <h4 className="mb-3 font-medium text-blue-800">
+              <div className="rounded-xl border-2 border-primary-200 bg-primary-50 p-4">
+                <h4 className="mb-3 font-medium text-primary-800">
                   Create New Module
                 </h4>
                 <div className="space-y-3">
@@ -563,7 +563,7 @@ const ProfileWelcomeFlow: React.FC = () => {
                       onChange={(e) =>
                         updateNewModuleField("name", e.target.value)
                       }
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:outline-none"
                       autoFocus
                     />
                   </div>
@@ -579,7 +579,7 @@ const ProfileWelcomeFlow: React.FC = () => {
                       onChange={(e) =>
                         updateNewModuleField("classId", e.target.value)
                       }
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:outline-none"
                     />
                   </div>
 
@@ -594,7 +594,7 @@ const ProfileWelcomeFlow: React.FC = () => {
                       onChange={(e) =>
                         updateNewModuleField("prof", e.target.value)
                       }
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none"
+                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:outline-none"
                     />
                   </div>
 
@@ -607,7 +607,7 @@ const ProfileWelcomeFlow: React.FC = () => {
                         !newModuleForm.prof.trim() ||
                         !newModuleForm.classId.trim()
                       }
-                      className="flex items-center gap-1 rounded-lg bg-blue-600 px-3 py-2 text-sm text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="flex items-center gap-1 rounded-lg bg-primary px-3 py-2 text-sm text-white transition-colors hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       <Check className="h-4 w-4" />
                       Add Module
@@ -650,7 +650,7 @@ const ProfileWelcomeFlow: React.FC = () => {
               placeholder="Tell us about your projects, achievements, or work experience..."
               value={formData.project}
               onChange={(e) => updateFormField("project", e.target.value)}
-              className="w-full resize-none rounded-xl border-2 border-gray-200 px-4 py-3 text-lg transition-colors focus:border-blue-500 focus:outline-none"
+              className="w-full resize-none rounded-xl border-2 border-gray-200 px-4 py-3 text-lg transition-colors focus:border-primary-500 focus:outline-none"
               rows={4}
               autoFocus
             />
@@ -667,7 +667,7 @@ const ProfileWelcomeFlow: React.FC = () => {
               placeholder="What are your hobbies, interests, or passions?"
               value={formData.interests}
               onChange={(e) => updateFormField("interests", e.target.value)}
-              className="w-full resize-none rounded-xl border-2 border-gray-200 px-4 py-3 text-lg transition-colors focus:border-blue-500 focus:outline-none"
+              className="w-full resize-none rounded-xl border-2 border-gray-200 px-4 py-3 text-lg transition-colors focus:border-primary-500 focus:outline-none"
               rows={4}
               autoFocus
             />
@@ -724,7 +724,7 @@ const ProfileWelcomeFlow: React.FC = () => {
               <Link
                 type="button"
                 href="/profile"
-                className="btn btn-wite flex items-center justify-center gap-2 rounded-xl bg-blue-600 px-8 py-3 font-medium text-white transition-colors hover:bg-blue-700"
+                className="btn btn-wite flex items-center justify-center gap-2 rounded-xl bg-primary-600 px-8 py-3 font-medium text-white transition-colors hover:bg-primary-700"
               >
                 <BookOpen className="h-5 w-5" />
                 Go to Dashboard
@@ -737,7 +737,7 @@ const ProfileWelcomeFlow: React.FC = () => {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-primary-50 to-indigo-100 p-4">
       <div className="w-full max-w-2xl">
         {/* Progress bar */}
         <div className="mb-8">
@@ -749,7 +749,7 @@ const ProfileWelcomeFlow: React.FC = () => {
           </div>
           <div className="h-2 w-full rounded-full bg-gray-200">
             <div
-              className="h-2 rounded-full bg-blue-500 transition-all duration-300"
+              className="h-2 rounded-full bg-secondary transition-all duration-300"
               style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
             />
           </div>
@@ -759,9 +759,9 @@ const ProfileWelcomeFlow: React.FC = () => {
         <div className="rounded-2xl bg-white p-8 shadow-xl">
           {/* Step header */}
           <div className="mb-8 text-center">
-            <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
+            <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary/100">
               {IconComponent && (
-                <IconComponent className="h-8 w-8 text-blue-600" />
+                <IconComponent className="h-8 w-8 text-white" />
               )}
             </div>
             <h2 className="mb-2 text-2xl font-bold text-gray-900">
@@ -792,7 +792,7 @@ const ProfileWelcomeFlow: React.FC = () => {
                 type="button"
                 onClick={handleSubmit}
                 disabled={isSubmitting}
-                className="flex items-center gap-2 rounded-xl bg-blue-600 px-8 py-3 text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex items-center gap-2 rounded-xl bg-primary px-8 py-3 text-white transition-colors hover:bg-primary disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isSubmitting ? (
                   <>
@@ -811,7 +811,8 @@ const ProfileWelcomeFlow: React.FC = () => {
                 type="button"
                 onClick={handleNext}
                 disabled={!isStepValid()}
-                className="flex items-center gap-2 rounded-xl bg-blue-600 px-8 py-3 text-white transition-colors hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+                className="flex items-center gap-2 rounded-xl bg-primary px-8 py-3 text-white transition-colors hover:bg-primary
+                 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Next
                 <ChevronRight className="h-5 w-5" />
