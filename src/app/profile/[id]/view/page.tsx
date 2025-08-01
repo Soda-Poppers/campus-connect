@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use server";
+
 import { api } from "~/trpc/server";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
@@ -13,13 +13,14 @@ type UserWithModules = User & {
   })[];
 };
 
+export const dynamic = "force-dynamic";
+
 export async function generateMetadata({
   params,
 }: {
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
-
   // Fetch user data in generateMetadata
   let user: UserWithModules | null = null;
   try {
@@ -44,7 +45,9 @@ export async function generateMetadata({
     `View ${user.name ?? "this user"}'s profile on Campus Connect. ${user.course ? `Studying ${user.course}` : ""} ${user.enrollmentYear ? `since ${user.enrollmentYear}` : ""}`.trim();
 
   const baseUrl =
-    process.env.NEXT_PUBLIC_BASE_URL ?? "campus-connect-nine-zeta.vercel.app";
+    process.env.NEXT_PUBLIC_BASE_URL ??
+    "https://campus-connect-nine-zeta.vercel.app";
+
   const ogImageUrl = `${baseUrl}/api/og/profile/${id}`;
   const profileUrl = `${baseUrl}/profile/${id}/view`;
 
