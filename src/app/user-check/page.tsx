@@ -16,6 +16,7 @@ export default function AfterLogin() {
   useEffect(() => {
     // Wait for session + tRPC result
     if (status === "authenticated") {
+      console.log("status>>", userCheck);
       if (userCheck.status === "success") {
         if (userCheck.data?.id) {
           router.replace("/profile");

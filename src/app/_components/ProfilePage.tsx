@@ -20,11 +20,13 @@ import {
   ChevronDown,
   ChevronUp,
   CreditCard,
+  Copy,
 } from "lucide-react";
 import { useState } from "react";
 import type { Course } from "@prisma/client";
 import { api } from "~/trpc/react";
 import type { Metadata } from "next";
+import { AnimatePresence, motion } from "framer-motion";
 
 interface FormData {
   name: string;
@@ -110,6 +112,9 @@ const ProfilePage = () => {
       });
     }
   }, [userData]);
+
+  const [copied, setCopied] = useState(false);
+  const [hovered, setHovered] = useState(false);
 
   useEffect(() => {
     if (userModules) {
@@ -203,7 +208,7 @@ const ProfilePage = () => {
   // };
 
   return (
-    <div className="safe-area-top h-full overflow-y-auto">
+    <div className="safe-area-top container-sm mx-auto h-full overflow-y-auto">
       {showEditProfile && (
         <div className="modal-overlay">
           <EditProfileModal
@@ -231,6 +236,14 @@ const ProfilePage = () => {
             {/* <Button variant="outline" size="sm" onClick={onShowQR}>
                             <QrCode className="w-4 h-4" />
                         </Button> */}
+            <Button
+              variant="outline"
+              className="flex-1"
+              onClick={onShowNamecard}
+            >
+              <CreditCard className="mr-2 h-4 w-4" />
+              Generate Namecard
+            </Button>
             <Button variant="outline" size="sm" onClick={onEditProfile}>
               <Edit3 className="h-4 w-4" />
             </Button>
@@ -238,7 +251,7 @@ const ProfilePage = () => {
         </div>
 
         {/* Profile Card - Singpass Style */}
-        <Card className="border-primary/20 overflow-hidden border-2">
+        <Card className="border-primary/20 overflow-hidden border-2 p-0">
           {/* Header Section with Background */}
           <div className="from-primary to-secondary relative bg-gradient-to-r p-6 text-white">
             <div className="flex items-start space-x-4">
@@ -440,6 +453,40 @@ const ProfilePage = () => {
                                 Show QR Code
                             </Button> */}
             </div>
+
+            {userData?.id && (
+              <div
+                className="relative mt-5 flex w-fit cursor-pointer items-center gap-2 text-sm text-gray-500"
+                onMouseEnter={() => setHovered(true)}
+                onMouseLeave={() => {
+                  setHovered(false);
+                  setCopied(false);
+                }}
+                onClick={() => {
+                  void navigator.clipboard.writeText(userData.id);
+                  setCopied(true);
+                  setTimeout(() => setCopied(false), 500);
+                }}
+              >
+                <span className="opacity-50">ID: {userData.id}</span>
+
+                {/* Animate icon based on hover or copied state */}
+                <AnimatePresence>
+                  {(hovered || copied) && (
+                    <motion.div
+                      key={copied ? "check" : "copy"}
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.1 }}
+                      className="ml-1 text-gray-400"
+                    >
+                      {copied ? "Copied!" : <Copy size={16} />}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            )}
           </div>
         </Card>
 

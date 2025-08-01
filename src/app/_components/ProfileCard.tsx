@@ -12,7 +12,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Card } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
 import { Course } from "@prisma/client"; // Import the Prisma-generated enum
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, Copy } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 const CourseDisplayNames: Record<Course, string> = {
   [Course.COMPUTER_SCIENCE]: "Computer Science",
@@ -77,11 +78,13 @@ const PortraitNamecard = ({ user }: Props) => {
     }
   };
 
-  console.log("user?>>>>>>>", user);
+  const [copied, setCopied] = useState(false);
+  const [hovered, setHovered] = useState(false);
+
   const softSkills = parseJsonField(user.softSkills);
   const hardSkills = parseJsonField(user.hardSkills);
   const socialMediaData = parseJsonField(user.socialMedia);
-  const interests = user.interest as InterestType[];
+  const interests = parseJsonField(user.interest) as InterestType[];
   const projects = parseJsonField(user.project ?? []);
 
   const getAcademicYearLabel = (enrollmentYear?: number | string) => {
@@ -104,8 +107,10 @@ const PortraitNamecard = ({ user }: Props) => {
     return `Y${yearNumber}`;
   };
 
+  console.log("user>>>>>>>", user);
+
   return (
-    <Card className="mx-auto w-full max-w-xs overflow-hidden bg-white shadow-md transition-all duration-300">
+    <Card className="mx-auto w-full max-w-sm overflow-hidden bg-white p-0 shadow-lg transition-all duration-300">
       {/* Header with gradient */}
       <div className="from-primary to-secondary bg-gradient-to-r p-6 text-center text-white">
         {user.image && (
