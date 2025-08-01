@@ -21,20 +21,67 @@ export async function generateMetadata({
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
+
+  // Try to fetch user; if missing, return minimal metadata (or could throw/notFound)
+  let user;
+  try {
+    user = await api.user.getUserCard({ id }); // adapt types if needed
+  } catch (err: any) {
+    if (err?.data?.code === "NOT_FOUND") {
+      // Let it fall through to a generic title
+    } else {
+      // swallow or log other errors if you prefer
+      console.warn("Metadata user fetch failed", err);
+    }
+  }
+
+  const baseUrl =
+    process.env.NEXT_PUBLIC_BASE_URL ??
+    "https://campus-connect-nine-zeta.vercel.app";
+
+  const title = user
+    ? `${user.name ?? "Profile"} • Campus Connect`
+    : "CampusConnect Profile";
+  const description = user
+    ? `View ${user.name ?? "this user"}'s profile on Campus Connect.${
+        user.course ? ` Studying ${user.course}` : ""
+      }${user.enrollmentYear ? ` since ${user.enrollmentYear}` : ""}`.trim()
+    : "Campus Connect user profile.";
+
+  const profileUrl = `${baseUrl}/profile/${id}/view`;
+  const ogImageUrl = `${baseUrl}/api/og/profile/${id}`;
+
   return {
-    title: "CampusConnect Profile",
+    title,
+    description,
     openGraph: {
+      title,
+      description,
+      url: profileUrl,
+      siteName: "Campus Connect",
       images: [
         {
-          url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/og/profile/${id}`,
+          url: ogImageUrl,
           width: 1200,
           height: 630,
+          alt: `${user?.name ?? "User"}'s Profile Card`,
         },
       ],
+      locale: "en_US",
+      type: "profile",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogImageUrl],
+    },
+    robots: {
+      index: true,
+      follow: true,
     },
   };
 }
-
 // export async function generateMetadata({
 //   params,
 // }: {
