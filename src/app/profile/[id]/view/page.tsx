@@ -39,12 +39,12 @@ export async function generateMetadata({
     };
   }
 
-  const title = `${user.name || "User"} - Campus Connect Profile`;
+  const title = `${user.name ?? "User"} - Campus Connect Profile`;
   const description =
-    `View ${user.name || "this user"}'s profile on Campus Connect. ${user.course ? `Studying ${user.course}` : ""} ${user.enrollmentYear ? `since ${user.enrollmentYear}` : ""}`.trim();
+    `View ${user.name ?? "this user"}'s profile on Campus Connect. ${user.course ? `Studying ${user.course}` : ""} ${user.enrollmentYear ? `since ${user.enrollmentYear}` : ""}`.trim();
 
   const baseUrl =
-    process.env.NEXT_PUBLIC_BASE_URL || "campus-connect-nine-zeta.vercel.app";
+    process.env.NEXT_PUBLIC_BASE_URL ?? "campus-connect-nine-zeta.vercel.app";
   const ogImageUrl = `${baseUrl}/api/og/profile/${id}`;
   const profileUrl = `${baseUrl}/profile/${id}/view`;
 
@@ -61,7 +61,7 @@ export async function generateMetadata({
           url: ogImageUrl,
           width: 1200,
           height: 630,
-          alt: `${user.name || "User"}'s Profile Card`,
+          alt: `${user.name ?? "User"}'s Profile Card`,
         },
       ],
       locale: "en_US",
