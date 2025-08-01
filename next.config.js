@@ -8,7 +8,7 @@ import "./src/env.js";
 const config = {
 
       images: {
-    domains: ['campus-connect-nine-zeta.vercel.app'],
+    domains: ['campus-connect-nine-zeta.vercel.app', "images.ctfassets.net"],
   },
 };
 

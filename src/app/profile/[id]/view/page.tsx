@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-
+"use server";
 import { api } from "~/trpc/server";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
