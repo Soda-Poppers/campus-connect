@@ -11,15 +11,15 @@ import { SessionProvider } from "next-auth/react";
 import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
-  title: "Campus Connect",
+  title: "CampusConnect",
   description: "Connect, Collaborate, Create",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 
   openGraph: {
-    title: "Campus Connect - Connect, Collaborate, Create.",
+    title: "CampusConnect - Connect, Collaborate, Create.",
     description: "how your details easily and connect with others",
     url: "https://https://campus-connect-nine-zeta.vercel.app",
-    siteName: "CORDY",
+    siteName: "CampusConnect",
     images: [
       {
         url: "https://images.ctfassets.net/ayry21z1dzn2/18nEdfLsiM6rkC7ijR2YqE/d666c93fefe74d22059b024d69e4355a/WhatsApp_Image_2025-08-01_at_15.43.47.jpeg?h=250",
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Campus Connect",
+    title: "CampusConnect",
     description: "Connect with others.",
     images: [
       "https://images.ctfassets.net/ayry21z1dzn2/18nEdfLsiM6rkC7ijR2YqE/d666c93fefe74d22059b024d69e4355a/WhatsApp_Image_2025-08-01_at_15.43.47.jpeg?h=250",
