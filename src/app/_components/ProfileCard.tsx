@@ -32,6 +32,10 @@ interface Skill {
   skillName: string;
 }
 
+interface InterestType {
+  skillName: string;
+}
+
 interface SocialMedia {
   platform: string;
   username: string;
@@ -77,7 +81,7 @@ const PortraitNamecard = ({ user }: Props) => {
   const softSkills = parseJsonField(user.softSkills);
   const hardSkills = parseJsonField(user.hardSkills);
   const socialMediaData = parseJsonField(user.socialMedia);
-  const interests = user.interest; // Note: it's 'interest' not 'interests' in your schema
+  const interests = user.interest as InterestType[];
   const projects = parseJsonField(user.project ?? []);
 
   const getAcademicYearLabel = (enrollmentYear?: number | string) => {
@@ -201,11 +205,17 @@ const PortraitNamecard = ({ user }: Props) => {
                   Interests
                 </h3>
                 <div className="flex flex-wrap gap-1">
-                  <Badge variant="outline" className="text-xs">
-                    {typeof interests === "string"
-                      ? interests
-                      : JSON.stringify(interests)}
-                  </Badge>
+                  {interests
+                    .slice(0, isExpanded ? interests.length : 3)
+                    .map((skill, index) => (
+                      <Badge
+                        key={index}
+                        className="px-2 py-1 text-xs"
+                        variant="outline"
+                      >
+                        {skill.skillName ?? skill}
+                      </Badge>
+                    ))}
                 </div>
               </div>
             )}
@@ -298,13 +308,15 @@ const PortraitNamecard = ({ user }: Props) => {
           <div>
             <h3 className="text-primary mb-2 text-sm font-medium">Interests</h3>
             <div className="flex flex-wrap gap-1">
-              <Badge variant="outline" className="text-xs">
-                {typeof interests === "string"
-                  ? interests.length > 20
-                    ? interests.substring(0, 20) + "..."
-                    : interests
-                  : JSON.stringify(interests)}
-              </Badge>
+              {interests.map((skill, index) => (
+                <Badge
+                  key={index}
+                  className="px-2 py-1 text-xs"
+                  variant="outline"
+                >
+                  {skill.skillName ?? skill}
+                </Badge>
+              ))}
             </div>
           </div>
         )}
