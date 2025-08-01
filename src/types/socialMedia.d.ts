@@ -1,7 +1,8 @@
-export type SocialMedia = {
-    socialMedia: [
+export type SocialMedia =
+    {
         platform: string,
         username: string,
-        url: string
-    ]
-}
+        url?: string
+    }
+
+export type SocialMedias = SocialMedia[]
