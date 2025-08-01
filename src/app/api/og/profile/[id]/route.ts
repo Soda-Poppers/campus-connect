@@ -30,6 +30,23 @@ const getAcademicYearLabel = (enrollmentYear?: number | string) => {
   return `Y${yearNumber}`;
 };
 
+// Helper function to validate image URL
+const isValidImageUrl = (url: string): boolean => {
+  if (!url) return false;
+  try {
+    const urlObj = new URL(url);
+    return urlObj.protocol === 'https:' && 
+           (url.includes('cloudinary.com') || 
+            url.includes('amazonaws.com') || 
+            url.includes('googleapis.com') ||
+            url.includes('github.com') ||
+            url.includes('gravatar.com') ||
+            url.includes('vercel.com'));
+  } catch {
+    return false;
+  }
+};
+
 export const runtime = "edge";
 
 export async function GET(
@@ -137,7 +154,12 @@ export async function GET(
       'Computer Science';
     const userYear = getAcademicYearLabel(user.enrollmentYear)
     const userIntro = user.intro ?? 'Passionate student ready to connect and collaborate!';
-    const userImage = user.image ?? '';
+    const rawUserImage = user.image ?? '';
+    
+    // Validate image URL
+    const userImage = isValidImageUrl(rawUserImage) ? rawUserImage : '';
+    console.log('OG: Image URL:', rawUserImage);
+    console.log('OG: Image URL valid:', !!userImage);
     
     type MaybeSkill = Skill | string | undefined;
     const getTopSkills = (user: any, limit = 3): MaybeSkill[] => {
@@ -161,6 +183,14 @@ export async function GET(
     const telegramAccount = socialMedia.find((s: any) => s.platform === 'telegram');
     const telegramHandle = telegramAccount?.username ?? '';
 
+    // Generate initials for fallback avatar
+    const initials = userName
+      .split(' ')
+      .map((n: string) => n[0])
+      .join('')
+      .substring(0, 2)
+      .toUpperCase();
+
     // Main namecard-style profile image
     return new ImageResponse(
       React.createElement(
@@ -170,8 +200,7 @@ export async function GET(
             width: "1200px",
             height: "630px",
             display: "flex",
-            fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
-            position: "relative",
+            fontFamily: 'Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
             background: "#ffffff",
           }
         },
@@ -183,10 +212,47 @@ export async function GET(
             style: {
               width: "260px",
               height: "630px",
-              background: "linear-gradient(135deg, #151b4d 0%, #151b4d 100%)",
-              position: "relative",
+              background: "#151b4d",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
             }
-          }
+          },
+          
+          // Profile photo or avatar - MOVED INSIDE BLUE SECTION
+          userImage ? 
+            React.createElement('img', {
+              src: userImage,
+              alt: userName,
+              style: {
+                width: "200px",
+                height: "200px",
+                borderRadius: "100px",
+                border: "6px solid white",
+                objectFit: "cover",
+                boxShadow: "0 8px 24px rgba(0,0,0,0.3)",
+              }
+            }) :
+            React.createElement(
+              'div',
+              {
+                style: {
+                  width: "200px",
+                  height: "200px",
+                  borderRadius: "100px",
+                  border: "6px solid white",
+                  background: "linear-gradient(135deg, #a78058 0%, #8a6f47 100%)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "80px",
+                  fontWeight: "bold",
+                  color: "white",
+                  boxShadow: "0 8px 24px rgba(0,0,0,0.3)",
+                }
+              },
+              initials
+            )
         ),
         
         // Gold border
@@ -194,8 +260,7 @@ export async function GET(
           style: {
             width: "32px",
             height: "630px",
-            background: "linear-gradient(135deg, #8a704d 0%, #8a704d 100%)",
-            position: "relative",
+            background: "#8a704d",
           }
         }),
         
@@ -210,8 +275,7 @@ export async function GET(
               display: "flex",
               flexDirection: "column",
               justifyContent: "center",
-              padding: "60px 60px 60px 120px",
-              position: "relative",
+              padding: "60px",
             }
           },
           
@@ -223,15 +287,16 @@ export async function GET(
                 display: "flex",
                 alignItems: "center",
                 marginBottom: "16px",
+                flexWrap: "wrap",
+                gap: "16px",
               }
             },
             React.createElement('h1', { 
               style: { 
-                fontSize: "64px", 
+                fontSize: "56px", 
                 margin: 0,
                 fontWeight: "900",
-                lineHeight: 1,
-                marginRight: "24px",
+                lineHeight: 1.1,
                 color: "#1e293b",
               } 
             }, userName),
@@ -241,22 +306,18 @@ export async function GET(
                 style: {
                   display: "flex",
                   alignItems: "center",
-                  fontSize: "24px",
+                  fontSize: "22px",
                   color: "#0ea5e9",
-                  fontWeight: "500",
+                  fontWeight: "600",
+                  background: "#e0f2fe",
+                  padding: "8px 16px",
+                  borderRadius: "24px",
                 }
               },
               React.createElement('div', {
                 style: {
-                  width: "32px",
-                  height: "32px",
-                  borderRadius: "16px",
-                  background: "#0ea5e9",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  marginRight: "12px",
-                  fontSize: "16px",
+                  marginRight: "8px",
+                  fontSize: "18px",
                 }
               }, '📱'),
               `@${telegramHandle}`
@@ -266,10 +327,10 @@ export async function GET(
           // Course and year
           React.createElement('p', { 
             style: { 
-              fontSize: "32px", 
-              margin: "0 0 32px 0",
+              fontSize: "30px", 
+              margin: "0 0 24px 0",
               color: "#475569",
-              fontWeight: "500",
+              fontWeight: "600",
             } 
           }, `SMU ${userCourse} ${userYear}`),
           
@@ -280,7 +341,7 @@ export async function GET(
                 {
                   style: {
                     display: "flex",
-                    gap: "16px",
+                    gap: "12px",
                     marginBottom: "32px",
                     flexWrap: "wrap",
                   },
@@ -302,9 +363,9 @@ export async function GET(
                       key: `skill-${index}-${skillName}`,
                       style: {
                         background: "#a78058",
-                        borderRadius: "50px",
-                        padding: "12px 24px",
-                        fontSize: "20px",
+                        borderRadius: "20px",
+                        padding: "10px 20px",
+                        fontSize: "18px",
                         fontWeight: 600,
                         color: "white",
                         display: "inline-block",
@@ -319,55 +380,14 @@ export async function GET(
           // Intro/description
           React.createElement('p', { 
             style: { 
-              fontSize: "26px", 
+              fontSize: "24px", 
               margin: 0,
               color: "#334155",
               lineHeight: 1.4,
-              maxWidth: "450px",
+              fontWeight: "400",
             } 
-          }, userIntro)
+          }, userIntro.length > 120 ? userIntro.substring(0, 120) + '...' : userIntro)
         ),
-        
-        // Profile photo - FIXED positioning
-        userImage ? 
-          React.createElement('img', {
-            src: userImage,
-            alt: userName,
-            style: {
-              position: "absolute",
-              left: "146px", // Fixed calculation: 260 - 140 (half of image width) + 16 (offset for gold border)
-              top: "175px", // Centered vertically
-              width: "280px",
-              height: "280px",
-              borderRadius: "140px",
-              border: "8px solid white",
-              objectFit: "cover",
-              boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
-            }
-          }) :
-          React.createElement(
-            'div',
-            {
-              style: {
-                position: "absolute",
-                left: "146px", // Same as image positioning
-                top: "175px",
-                width: "280px",
-                height: "280px",
-                borderRadius: "140px",
-                border: "8px solid white",
-                background: "linear-gradient(135deg, #a78058 0%, #8a6f47 100%)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                fontSize: "100px",
-                fontWeight: "bold",
-                color: "white",
-                boxShadow: "0 8px 24px rgba(0,0,0,0.15)",
-              }
-            },
-            userName.split(' ').map((n: string) => n[0]).join('').substring(0, 2)
-          ),
           
         // Bottom branding
         React.createElement(
@@ -375,14 +395,14 @@ export async function GET(
           {
             style: {
               position: "absolute",
-              bottom: "40px",
+              bottom: "30px",
               right: "60px",
-              fontSize: "20px",
-              color: "#64748b",
+              fontSize: "18px",
+              color: "#94a3b8",
               fontWeight: "500",
             }
           },
-          'Created by CampusConnect'
+          'CampusConnect'
         )
       ),
       {
