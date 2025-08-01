@@ -14,6 +14,7 @@ import {
 
 import { Course } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
+import { platform } from "os";
 
 const skillSchema = z.object({
   skillName: z.string().min(1).transform((s) => s.trim()),
@@ -130,7 +131,12 @@ export const userRouter = createTRPCRouter({
       project: z.string().optional(),
       interests: skillArraySchema,
       hardSkills: skillArraySchema,
-      softSkills: skillArraySchema
+      softSkills: skillArraySchema,
+      socialMedia: z.array(z.object({
+        platform: z.string(),
+        username: z.string(),
+        url: z.string().optional().nullable()
+      }))
     }))
     .mutation(async ({ input, ctx }) => {
 
@@ -155,7 +161,9 @@ export const userRouter = createTRPCRouter({
       if (input.softSkills && input.softSkills.length > 0) {
         data.softSkills = input.softSkills;
       }
-
+      if (input.socialMedia && input.socialMedia.length > 0) {
+        data.socialMedia = input.socialMedia;
+      }
 
       if (input.modules && input.modules.length > 0) {
         // First, clear existing module connections for this user
