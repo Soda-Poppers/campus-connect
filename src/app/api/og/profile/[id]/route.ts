@@ -176,7 +176,7 @@ export async function GET(
               fontWeight: 600,
               backdropFilter: "blur(10px)",
             }
-          }, 'cordy.sg')
+          }, 'https://campus-connect-nine-zeta.vercel.app')
         )
       ),
       {

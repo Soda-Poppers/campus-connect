@@ -107,6 +107,23 @@ const ProfilePublicView = async ({
     return <div>No user found.</div>;
   }
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    name: "User Profile",
+    description: "View user profile details",
+    url: `${process.env.NEXT_PUBLIC_SITE_URL}/profile/${id}/view`,
+    location: {
+      "@type": "Place",
+      name: "profile",
+    },
+    organizer: {
+      "@type": "Organization",
+      name: "CampusConnect",
+      url: "https://campus-connect-nine-zeta.vercel.app",
+    },
+  };
+
   return (
     <div
       className="h-full min-h-[90vh] px-4 py-8"

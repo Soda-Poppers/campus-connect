@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "CampusConnect",
     short_name: "CampusConnect",
-    description: "Cordy",
+    description: "CampusConnect",
     start_url: "/",
     display: "standalone",
     background_color: "#FFFFFF",
