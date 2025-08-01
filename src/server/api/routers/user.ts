@@ -78,6 +78,25 @@ export const userRouter = createTRPCRouter({
       return user;
     }),
 
+     getUserCard: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const user = await ctx.db.user.findUnique({
+        where: { id: input.id },
+        include: {
+          Modules: {
+            include: {
+              module: true,
+            },
+          }
+      
+        },
+      });
+
+      return user;
+    }),
+
+
   // Get current user
   getCurrentUser: protectedProcedure.query(async ({ ctx }) => {
     const user = await ctx.db.user.findUnique({

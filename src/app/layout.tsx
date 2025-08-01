@@ -27,9 +27,9 @@ export default async function RootLayout({
   const session = await auth();
   return (
     <html lang="en" className={`${geist.variable}`}>
-      <body>
+      <body className="flex min-h-screen flex-col justify-between">
         <SessionProvider session={session}>
-          <Toaster/>
+          <Toaster />
           <Navbar session={session} />
           <TRPCReactProvider>{children}</TRPCReactProvider>
           <Footer />
