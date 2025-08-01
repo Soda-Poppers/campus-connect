@@ -212,7 +212,7 @@ ${senderName}`;
                                         ].map((cat) => (
                                             <Button
                                                 key={cat.value}
-                                                variant={newPost.category === cat.value ? 'default' : 'outline'}
+                                                variant={newPost.category === cat.value ? 'secondary' : 'outline'}
                                                 onClick={() => setNewPost(prev => ({ ...prev, category: cat.value }))}
                                                 className={newPost.category === cat.value ? 'text-sm text-white' : 'text-sm'}
                                             >
