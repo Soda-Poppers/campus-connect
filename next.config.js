@@ -5,6 +5,11 @@
 import "./src/env.js";
 
 /** @type {import("next").NextConfig} */
-const config = {};
+const config = {
+
+      images: {
+    domains: ['campus-connect-nine-zeta.vercel.app'],
+  },
+};
 
 export default config;

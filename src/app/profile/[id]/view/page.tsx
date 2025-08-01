@@ -20,16 +20,63 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params;
 
+  // Fetch user data in generateMetadata
+  let user: UserWithModules | null = null;
+  try {
+    user = await api.user.getUserCard({ id: id });
+  } catch (err: any) {
+    // Return default metadata if user not found
+    return {
+      title: "User Profile Not Found",
+      description: "The requested user profile could not be found.",
+    };
+  }
+
+  if (!user) {
+    return {
+      title: "User Profile Not Found",
+      description: "The requested user profile could not be found.",
+    };
+  }
+
+  const title = `${user.name || "User"} - Campus Connect Profile`;
+  const description =
+    `View ${user.name || "this user"}'s profile on Campus Connect. ${user.course ? `Studying ${user.course}` : ""} ${user.enrollmentYear ? `since ${user.enrollmentYear}` : ""}`.trim();
+
+  const baseUrl =
+    process.env.NEXT_PUBLIC_BASE_URL || "campus-connect-nine-zeta.vercel.app";
+  const ogImageUrl = `${baseUrl}/api/og/profile/${id}`;
+  const profileUrl = `${baseUrl}/profile/${id}/view`;
+
   return {
-    title: `User Profile - ${id}`,
+    title,
+    description,
     openGraph: {
+      title,
+      description,
+      url: profileUrl,
+      siteName: "Campus Connect",
       images: [
         {
-          url: `${process.env.NEXT_PUBLIC_BASE_URL}/api/og/profile/${id}`,
+          url: ogImageUrl,
           width: 1200,
           height: 630,
+          alt: `${user.name || "User"}'s Profile Card`,
         },
       ],
+      locale: "en_US",
+      type: "profile",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [ogImageUrl],
+    },
+    // Additional metadata
+    robots: {
+      index: true,
+      follow: true,
     },
   };
 }
@@ -51,9 +98,6 @@ const ProfilePublicView = async ({
     return notFound();
   }
 
-  if (!user) {
-    return <div>No user found.</div>;
-  }
   if (!user) {
     return <div>No user found.</div>;
   }
