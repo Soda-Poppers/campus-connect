@@ -9,6 +9,10 @@ import {
 import { Button } from "~/components/ui/button";
 import { Card } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
+import type { Skill } from "~/types/skills";
+import type { Project } from "~/types/projects";
+import type { SocialMedia } from "~/types/socialMedia";
+import type { Course } from "@prisma/client";
 import {
     Avatar,
     AvatarFallback,
@@ -29,26 +33,53 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 
-const NamecardModal = ({ userMods, userProfile, onClose }) => {
-    const [selectedSkills, setSelectedSkills] = useState([]);
+interface Module {
+    id?: string;
+    name: string;
+    prof?: string;
+    classId?: string;
+}
+
+interface UserProfile {
+    name: string;
+    enrollmentYear: number;
+    intro:string;
+    image:string;
+    bannerURL: string;
+    course: Course;
+    project: Project[];
+    interest: Skill[];
+    hardSkills: Skill[];
+    softSkills: Skill[];
+    socialMedia: SocialMedia[]
+}
+
+interface NamecardModalProps {
+    userMods: Module[];
+    userProfile: UserProfile;
+    onClose: () => void;
+}
+
+const NamecardModal: React.FC<NamecardModalProps> = ({ userMods, userProfile, onClose }) => {
+    const [selectedSkills, setSelectedSkills] = useState<Skill[]>([]);
 
     // Mock data if profile is empty
-    const [profile, setProfile] = useState({
+    const [profile] = useState<UserProfile>({
         ...userProfile,
     });
-    const [modules, setModules] = useState({
+    const [modules] = useState<Module[]>([
         ...userMods
-    })
+    ]);
 
-    const allSkills = [
-        ...profile.softSkills,
-        ...profile.hardSkills,
+    const allSkills: Skill[] = [
+        ...(profile.softSkills ?? []),
+        ...(profile.hardSkills ?? []),
     ];
 
-    const toggleSkillSelection = (skill) => {
+    const toggleSkillSelection = (skill: Skill) => {
         setSelectedSkills((prev) => {
-            if (prev.includes(skill)) {
-                return prev.filter((s) => s !== skill);
+            if (prev.some(s => s.skillName === skill.skillName)) {
+                return prev.filter((s) => s.skillName !== skill.skillName);
             } else if (prev.length < 3) {
                 return [...prev, skill];
             }
@@ -56,14 +87,14 @@ const NamecardModal = ({ userMods, userProfile, onClose }) => {
         });
     };
 
-    const handleDownload = (type) => {
+    const handleDownload = (type: 'portrait' | 'og') => {
         // Mock download functionality
-        toast.success("Downloaded!")
+        toast.success("Download function coming soon!")
     };
 
-    const handleShare = async (type) => {
+    const handleShare = async (type: 'portrait' | 'og') => {
         const text = `Check out my ${type} on CampusConnect!`;
-        const url = `https://campusconnect.smu.edu.sg/profile/${profile.id}`;
+        const url = `https://campusconnect.smu.edu.sg/profile/${profile.name}`;
 
         if (navigator.share) {
             try {
@@ -82,14 +113,14 @@ const NamecardModal = ({ userMods, userProfile, onClose }) => {
 
     useEffect(() => {
         console.log(profile)
-    }, [])
+    }, [profile]);
 
-    const PortraitNamecard = () => (
+    const PortraitNamecard: React.FC = () => (
         <Card className="w-full max-w-xs mx-auto bg-gradient-to-br bg-slate-600 from-primary/5 to-secondary/5 border-2 border-primary/20 overflow-hidden">
             {/* Header with gradient */}
             <div className="bg-gradient-to-r from-primary to-secondary p-6 text-center text-white">
                 <Avatar className="w-20 h-20 mx-auto mb-4 border-4 border-white">
-                    <AvatarImage src={profile.profilePhoto} />
+                    <AvatarImage src={profile.image} />
                     <AvatarFallback className="bg-white text-primary text-xl font-bold">
                         {profile.name
                             .split(" ")
@@ -102,9 +133,8 @@ const NamecardModal = ({ userMods, userProfile, onClose }) => {
                     {profile.enrollmentYear} • {profile.course.replace(/_/g, " ").toLowerCase().replace(/\b\w/g, char => char.toUpperCase())}
                 </p>
                 <p className="text-white/80 text-sm mt-1">
-                    {profile.socialMedia?.find(s => s.platform === "telegram")?.username || ''}
+                    {profile.socialMedia?.find(s => s.platform === "telegram")?.username ?? ''}
                 </p>
-
             </div>
 
             {/* Content */}
@@ -116,8 +146,8 @@ const NamecardModal = ({ userMods, userProfile, onClose }) => {
                     </h3>
                     <div className="flex flex-wrap gap-1">
                         {[
-                            ...profile.softSkills.slice(0, 3),
-                            ...profile.hardSkills.slice(0, 3),
+                            ...(profile.softSkills ?? []).slice(0, 3),
+                            ...(profile.hardSkills ?? []).slice(0, 3),
                         ].map((skill, index) => (
                             <Badge
                                 key={index}
@@ -149,7 +179,7 @@ const NamecardModal = ({ userMods, userProfile, onClose }) => {
                                         key={index}
                                         className="text-xs text-muted-foreground"
                                     >
-                                        {module.code} - {module.name}
+                                        {module.classId} - {module.name}
                                     </div>
                                 ))}
                         </div>
@@ -157,7 +187,7 @@ const NamecardModal = ({ userMods, userProfile, onClose }) => {
                 )}
 
                 {/* Interests */}
-                {profile.interest?.length > 0 && (
+                {profile.interest && profile.interest.length > 0 && (
                     <div>
                         <h3 className="font-medium text-primary mb-2 text-sm">
                             Interests
@@ -165,7 +195,7 @@ const NamecardModal = ({ userMods, userProfile, onClose }) => {
                         <div className="flex flex-wrap gap-1">
                             {profile.interest
                                 .slice(0, 3)
-                                .map((interest: { skillName: string }, index: number) => (
+                                .map((interest: Skill, index: number) => (
                                     <Badge
                                         key={index}
                                         variant="outline"
@@ -177,9 +207,8 @@ const NamecardModal = ({ userMods, userProfile, onClose }) => {
                         </div>
                     </div>
                 )}
-
-
             </div>
+
 
             {/* Footer */}
             <div className="border-t border-border/50 p-3 text-center">
@@ -196,7 +225,7 @@ const NamecardModal = ({ userMods, userProfile, onClose }) => {
                 {/* Profile Info */}
                 <div className="flex items-center space-x-4 flex-1">
                     <Avatar className="w-16 h-16 border-3 border-primary/20">
-                        <AvatarImage src={profile.profilePhoto} />
+                        <AvatarImage src={profile.image} />
                         <AvatarFallback className="bg-primary/10 text-primary font-bold">
                             {profile.name
                                 .split(" ")
@@ -213,7 +242,7 @@ const NamecardModal = ({ userMods, userProfile, onClose }) => {
                             {profile.enrollmentYear} • {profile.course}
                         </p>
                         <p className="text-muted-foreground text-sm">
-                            {profile.socialMedia?.find(s => s.platform === "telegram")?.username || ''}
+                            {profile.socialMedia?.find(s => s.platform === "telegram")?.username ?? ''}
                         </p>
 
                         {/* Selected Skills for OG Card */}
@@ -345,7 +374,7 @@ const NamecardModal = ({ userMods, userProfile, onClose }) => {
                                 <div className="flex flex-wrap gap-2">
                                     {allSkills.map((skill, index) => {
                                         const isSelected =
-                                            selectedSkills.includes(skill.skillName);
+                                            selectedSkills.some(selectedSkill => selectedSkill.skillName === skill.skillName);
                                         return (
                                             <Button
                                                 key={index}

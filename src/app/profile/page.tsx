@@ -12,8 +12,6 @@ import type { Project } from '~/types/projects';
 import type { SocialMedia } from '~/types/socialMedia';
 import toast from 'react-hot-toast';
 import {
-    Download,
-    QrCode,
     Edit3,
     MessageCircle,
     Instagram,
@@ -24,17 +22,38 @@ import {
     CreditCard
 } from 'lucide-react';
 import { useState } from 'react';
-import { Course } from "@prisma/client";
+import type { Course } from "@prisma/client";
 import { api } from '~/trpc/react';
+
+interface FormData {
+    name: string;
+    enrollmentYear: number;
+    intro: string;
+    image: string;
+    bannerURL: string;
+    course: Course;
+    project: Project[];
+    interest: Skill[];
+    hardSkills: Skill[];
+    softSkills: Skill[];
+    socialMedia: SocialMedia[]
+}
+
+interface Module {
+    id?: string;
+    name: string;
+    classId: string;
+    prof: string;
+}
 
 // const ProfilePage = ({ userProfile, onShowQR, onEditProfile, onShowNamecard }) => {
 const ProfilePage = () => {
     const utils = api.useUtils();
-    const [expandedModules, setExpandedModules] = useState({});
+    const [expandedModules, setExpandedModules] = useState<Record<string, boolean>>({});
     const [showEditProfile, setShowEditProfile] = useState(false);
     const [showNamecard, setShowNamecard] = useState(false)
     // Form state
-    const [profile, setProfile] = useState({
+    const [profile, setProfile] = useState<FormData>({
         name: "",
         enrollmentYear: 0,
         course: "COMPUTER_SCIENCE" as Course, // using enum value
@@ -48,7 +67,7 @@ const ProfilePage = () => {
         socialMedia: [] as SocialMedia[],
     });
 
-    const [modules, setUserModules] = useState({})
+    const [modules, setUserModules] = useState<Module[]>([])
 
     const { data: userData } = api.user.getCurrentUser.useQuery();
     const { data: userModules } = api.module.getUserModules.useQuery();
@@ -58,47 +77,55 @@ const ProfilePage = () => {
         if (userData) {
             console.log(userData)
             setProfile({
-                name: userData.name || "",
-                enrollmentYear: userData.enrollmentYear || 1,
-                course: userData.course || "COMPUTER_SCIENCE",
-                image: userData.image || "",
-                bannerURL: userData.bannerURL || "",
-                intro: userData.intro || "",
-                hardSkills: userData.hardSkills || [],
-                softSkills: userData.softSkills || [],
-                project: userData.project || [],
-                interest: userData.interest || [],
-                socialMedia: userData.socialMedia || [],
+                name: userData.name ?? "",
+                enrollmentYear: userData.enrollmentYear ?? 1,
+                course: userData.course ?? "COMPUTER_SCIENCE",
+                image: userData.image ?? "",
+                bannerURL: userData.bannerURL ?? "",
+                intro: userData.intro ?? "",
+                hardSkills: userData.hardSkills as Skill[] ?? [],
+                softSkills: userData.softSkills as Skill[] ?? [],
+                project: userData.project as Project[] ?? [],
+                interest: userData.interest as Skill[] ?? [],
+                socialMedia: userData.socialMedia as SocialMedia[] ?? [],
             });
         }
     }, [userData]);
 
     useEffect(() => {
         if (userModules) {
-            setUserModules({
-                name: userModules.map(module => module.name).join(", ") || "",
-                classId: userModules.map(module => module.classId).join(", ") || "",
-                prof: userModules.map(module => module.prof).join(", ") || "",
-            });
+            setUserModules(
+                userModules.map(module => ({
+                    id: module.id,
+                    name: module.name,
+                    classId: module.classId,
+                    prof: module.prof,
+                }))
+            );
         }
         // name    String
         // classId String           @unique
         // prof    String
         // User    ModulesOnUsers[]
         // userId  String?
-    }, [userModules]);
+    }, [// name    String
+        // classId String           @unique
+        // prof    String
+        // User    ModulesOnUsers[]
+        // userId  String?
+        userModules]);
 
     const onEditProfile = () => setShowEditProfile(true)
     const onShowNamecard = () => setShowNamecard(true)
 
-    const toggleModule = (moduleId) => {
+    const toggleModule = (moduleId: string) => {
         setExpandedModules(prev => ({
             ...prev,
             [moduleId]: !prev[moduleId]
         }));
     };
 
-    const getSocialIcon = (platform: String) => {
+    const getSocialIcon = (platform: string) => {
         switch (platform) {
             case 'telegram': return <MessageCircle className="w-4 h-4" />;
             case 'instagram': return <Instagram className="w-4 h-4" />;
@@ -108,12 +135,18 @@ const ProfilePage = () => {
         }
     };
 
-    const { mutate: editUser, isPending } = api.user.editUser.useMutation({
-        onSuccess: () => { toast.success("Profile updated!"); utils.user.invalidate(); },
-        onError: (e) => { console.error("Error:", e); toast.error("An error has occured") },
+    const { mutate: editUser } = api.user.editUser.useMutation({
+        onSuccess: () => { 
+            toast.success("Profile updated!"); 
+            void utils.user.invalidate(); 
+        },
+        onError: (e) => { 
+            console.error("Error:", e); 
+            toast.error("An error has occured") 
+        },
     });
 
-    const handleProfileUpdate = (e, profileData) => {
+    const handleProfileUpdate = (e: React.FormEvent, profileData: FormData) => {
         e.preventDefault();
         editUser(profileData);
     };
@@ -159,7 +192,7 @@ const ProfilePage = () => {
             {showNamecard && (
                 <div className="modal-overlay">
                     <NamecardModal
-                        userMods={modules}
+                        userMods={modules ?? []}
                         userProfile={profile}
                         onClose={() => setShowNamecard(false)}
                     />
@@ -245,7 +278,7 @@ const ProfilePage = () => {
                             </div>
                         )}
 
-                        Modules Section
+                        {/* Modules Section */}
                         {userModules && (
                             <div>
                                 <h3 className="font-medium text-primary mb-3">Current Modules</h3>
@@ -258,7 +291,7 @@ const ProfilePage = () => {
                                             >
                                                 <div className="flex justify-between items-center">
                                                     <div>
-                                                        <div className="font-medium">{module.code} - {module.classId}</div>
+                                                        <div className="font-medium">{module.classId}</div>
                                                         {expandedModules[module.id] && (
                                                             <div className="mt-2 space-y-1">
                                                                 {module.name && (
@@ -287,7 +320,7 @@ const ProfilePage = () => {
                             </div>
                         )}
 
-                        Interests
+                        {/* Interests */}
                         {profile.interest.length > 0 && (
                             <div>
                                 <h3 className="font-medium text-primary mb-3">Interests</h3>

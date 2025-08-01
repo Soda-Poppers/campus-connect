@@ -6,7 +6,9 @@ import { Label } from '~/components/ui/label';
 import { Textarea } from '~/components/ui/textarea';
 import { Badge } from '~/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '~/components/ui/avatar';
-import type { Skills } from '~/types/skills';
+import type { Skill } from '~/types/skills';
+import type { Project } from '~/types/projects';
+import type { SocialMedia } from '~/types/socialMedia';
 import {
     X,
     Plus,
@@ -14,21 +16,63 @@ import {
     Save,
     ChevronDown,
     ChevronUp,
-    Edit3
 } from 'lucide-react';
 import { Course } from '@prisma/client';
 
-const EditProfileModal = ({ open, userProfile, onSave, onClose }) => {
-    const [formData, setFormData] = useState({
+
+interface Module {
+    id?: number;
+    name: string;
+    prof: string;
+    classId: string;
+}
+
+interface UserProfile {
+    name: string;
+    enrollmentYear: number;
+    intro:string;
+    image:string;
+    bannerURL: string;
+    course: Course;
+    project: Project[];
+    interest: Skill[];
+    hardSkills: Skill[];
+    softSkills: Skill[];
+    socialMedia: SocialMedia[]
+}
+
+interface Props {
+    open: boolean;
+    userProfile: UserProfile;
+    onSave: (e: React.MouseEvent<HTMLButtonElement>, data: UserProfile) => void;
+    onClose: () => void;
+}
+
+interface ExpandedSections {
+    basic: boolean;
+    skills: boolean;
+    modules: boolean;
+    interests: boolean;
+    socials: boolean;
+}
+
+interface SectionHeaderProps {
+    title: string;
+    section: keyof ExpandedSections;
+    children: React.ReactNode;
+}
+
+const EditProfileModal: React.FC<Props> = ({ open, userProfile, onSave, onClose }) => {
+    const [formData, setFormData] = useState<UserProfile>({
         ...userProfile,
     });
-    const [newSkill, setNewSkill] = useState('');
-    const [skillType, setSkillType] = useState('soft');
-    const [newModule, setNewModule] = useState({ code: '', name: '', prof: '', classId: '' });
-    const [newInterest, setNewInterest] = useState<Skills | string>('');
-    const [editingModule, setEditingModule] = useState(null);
-    const [showModuleDialog, setShowModuleDialog] = useState(false);
-    const [expandedSections, setExpandedSections] = useState({
+    const [newSkill, setNewSkill] = useState<string>('');
+    const [skillType, setSkillType] = useState<'soft' | 'hard'>('soft');
+    const [newModule, setNewModule] = useState<Module>({ name: '', prof: '', classId: '' });
+    const [newInterest, setNewInterest] = useState<string>('');
+    const [editingModule, setEditingModule] = useState<Module | null>(null);
+    const [showModuleDialog, setShowModuleDialog] = useState<boolean>(false);
+    const [expandedSections, setExpandedSections] = useState<ExpandedSections>({
         basic: true,
         skills: false,
         modules: false,
@@ -42,14 +86,14 @@ const EditProfileModal = ({ open, userProfile, onSave, onClose }) => {
     }));
 
     // Fix the field name mismatch issue
-    const handleInputChange = useCallback((field, value) => {
-        setFormData(prev => ({ ...prev, [field]: value }));
+    const handleInputChange = useCallback((field: keyof UserProfile, value: string) => {
+        setFormData((prev: UserProfile) => ({ ...prev, [field]: value }));
     }, []);
     
     // Optimize social media handling to prevent unnecessary re-renders
-    const handleSocialChange = useCallback((platform, value) => {
-        setFormData(prev => {
-            const socialMedia = prev.socialMedia || [];
+    const handleSocialChange = useCallback((platform: string, value: string) => {
+        setFormData((prev: UserProfile) => {
+            const socialMedia: SocialMedia[] = prev.socialMedia ?? [];
             const existing = socialMedia.find(s => s.platform === platform);
             
             if (existing) {
@@ -73,63 +117,67 @@ const EditProfileModal = ({ open, userProfile, onSave, onClose }) => {
     const addSkill = () => {
         if (newSkill.trim()) {
             const skillArray = skillType === 'soft' ? 'softSkills' : 'hardSkills';
-            if (formData[skillArray].length < 5 && !formData[skillArray].some(skill => skill.skillName === newSkill.trim())) {
-                setFormData(prev => ({
+            const currentSkills = formData[skillArray] ?? [];
+            if (currentSkills.length < 5 && !currentSkills.some((skill: Skill) => skill.skillName === newSkill.trim())) {
+                setFormData((prev: UserProfile) => ({
                     ...prev,
-                    [skillArray]: [...prev[skillArray], { skillName: newSkill.trim() }]
+                    [skillArray]: [...currentSkills, { skillName: newSkill.trim() }]
                 }));
                 setNewSkill('');
             }
         }
     };
 
-    const removeSkill = (index, type) => {
+    const removeSkill = (index: number, type: 'soft' | 'hard') => {
         const skillArray = type === 'soft' ? 'softSkills' : 'hardSkills';
-        setFormData(prev => ({
+        const currentSkills = formData[skillArray] ?? [];
+        setFormData((prev: UserProfile) => ({
             ...prev,
-            [skillArray]: prev[skillArray].filter((_, i) => i !== index)
+            [skillArray]: currentSkills.filter((_: Skill, i: number) => i !== index)
         }));
     };
 
-    const addModule = () => {
-        if (newModule.code.trim() && newModule.name.trim()) {
-            setFormData(prev => ({
-                ...prev,
-                modules: [...(prev.modules || []), { ...newModule, id: Date.now() }]
-            }));
-            setNewModule({ code: '', name: '', prof: '', classId: '' });
-            setShowModuleDialog(false);
-        }
-    };
+    // const addModule = () => {
+    //     if (newModule.classId.trim() && newModule.name.trim()) {
+    //         setFormData((prev: UserProfile) => ({
+    //             ...prev,
+    //             modules: [...(prev.modules || []), { ...newModule, id: Date.now() }]
+    //         }));
+    //         setNewModule({ name: '', prof: '', classId: '' });
+    //         setShowModuleDialog(false);
+    //     }
+    // };
 
-    const editModule = (module) => {
-        setEditingModule(module);
-        setNewModule({ ...module });
-        setShowModuleDialog(true);
-    };
+    // const editModule = (module: Module) => {
+    //     setEditingModule(module);
+    //     setNewModule({ ...module });
+    //     setShowModuleDialog(true);
+    // };
 
-    const updateModule = () => {
-        setFormData(prev => ({
-            ...prev,
-            modules: prev.modules.map(m => m.id === editingModule.id ? { ...newModule } : m)
-        }));
-        setNewModule({ code: '', name: '', prof: '', classId: '' });
-        setEditingModule(null);
-        setShowModuleDialog(false);
-    };
+    // const updateModule = () => {
+    //     if (editingModule) {
+    //         setFormData(prev => ({
+    //             ...prev,
+    //             modules: (prev.modules || []).map(m => m.id === editingModule.id ? { ...newModule } : m)
+    //         }));
+    //         setNewModule({  name: '', prof: '', classId: '' });
+    //         setEditingModule(null);
+    //         setShowModuleDialog(false);
+    //     }
+    // };
 
-    const removeModule = (index) => {
-        setFormData(prev => ({
-            ...prev,
-            modules: prev.modules.filter((_, i) => i !== index)
-        }));
-    };
+    // const removeModule = (index: number) => {
+    //     setFormData(prev => ({
+    //         ...prev,
+    //         modules: (prev.modules || []).filter((_, i) => i !== index)
+    //     }));
+    // };
 
     const addInterest = () => {
         if (newInterest.trim()) {
-            const interests = formData.interest || [];
-            if (interests.length < 5 && !interests.some(interest => interest.skillName === newInterest.trim())) {
-                setFormData(prev => ({
+            const interests = formData.interest ?? [];
+            if (interests.length < 5 && !interests.some((interest: Skill) => interest.skillName === newInterest.trim())) {
+                setFormData((prev: UserProfile) => ({
                     ...prev,
                     interest: [...interests, { skillName: newInterest.trim() }]
                 }));
@@ -138,26 +186,26 @@ const EditProfileModal = ({ open, userProfile, onSave, onClose }) => {
         }
     };
 
-    const removeInterest = (index) => {
-        setFormData(prev => ({
+    const removeInterest = (index: number) => {
+        setFormData((prev: UserProfile) => ({
             ...prev,
-            interest: prev.interest.filter((_, i) => i !== index)
+            interest: (prev.interest ?? []).filter((_, i) => i !== index)
         }));
     };
 
-    const toggleSection = (section) => {
+    const toggleSection = (section: keyof ExpandedSections) => {
         setExpandedSections(prev => ({
             ...prev,
             [section]: !prev[section]
         }));
     };
 
-    const handleSave = (e) => {
+    const handleSave = (e: React.MouseEvent<HTMLButtonElement>) => {
         onSave(e, formData);
         onClose();
     };
 
-    const SectionHeader = ({ title, section, children }) => (
+    const SectionHeader: React.FC<SectionHeaderProps> = ({ title, section, children }) => (
         <div className="border border-border rounded-lg">
             <button
                 onClick={() => toggleSection(section)}
@@ -178,8 +226,8 @@ const EditProfileModal = ({ open, userProfile, onSave, onClose }) => {
     );
 
     // Get social media values safely
-    const getSocialValue = (platform) => {
-        return formData.socialMedia?.find(s => s.platform === platform)?.username || '';
+    const getSocialValue = (platform: string): string => {
+        return formData.socialMedia?.find(s => s.platform === platform)?.username ?? '';
     };
 
     return (
@@ -202,9 +250,9 @@ const EditProfileModal = ({ open, userProfile, onSave, onClose }) => {
                     <div className="text-center">
                         <div className="relative inline-block">
                             <Avatar className="w-24 h-24 border-4 border-primary/20">
-                                <AvatarImage src={formData.profilePhoto} />
+                                <AvatarImage src={formData.image} />
                                 <AvatarFallback className="bg-muted text-xl">
-                                    {formData.name?.split(' ').map(n => n[0]).join('') || 'U'}
+                                    {formData.name?.split(' ').map(n => n[0]).join('') ?? 'U'}
                                 </AvatarFallback>
                             </Avatar>
                             <button className="absolute bottom-0 right-0 w-8 h-8 bg-primary rounded-full flex items-center justify-center border-2 border-background">
@@ -220,7 +268,7 @@ const EditProfileModal = ({ open, userProfile, onSave, onClose }) => {
                                 <Label htmlFor="edit-name">Full Name</Label>
                                 <Input
                                     id="edit-name"
-                                    value={formData.name || ''}
+                                    value={formData.name ?? ''}
                                     onChange={(e) => handleInputChange('name', e.target.value)}
                                     placeholder="Enter your full name"
                                 />
@@ -230,7 +278,7 @@ const EditProfileModal = ({ open, userProfile, onSave, onClose }) => {
                                 <Label htmlFor="edit-degree">Degree Program</Label>
                                 <select
                                     id="edit-degree"
-                                    value={formData.course || ''}
+                                    value={formData.course ?? ''}
                                     onChange={(e) => handleInputChange('course', e.target.value)}
                                     className="border border-input bg-background text-foreground rounded-md p-2 w-full focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
                                 >
@@ -247,7 +295,7 @@ const EditProfileModal = ({ open, userProfile, onSave, onClose }) => {
                                 <Input
                                     id="edit-year"
                                     type="number"
-                                    value={formData.enrollmentYear || ''}
+                                    value={formData.enrollmentYear ?? ''}
                                     onChange={(e) => handleInputChange('enrollmentYear', e.target.value)}
                                     placeholder="e.g., 2023"
                                     min={2000}
@@ -259,14 +307,14 @@ const EditProfileModal = ({ open, userProfile, onSave, onClose }) => {
                                 <Label htmlFor="edit-intro">Introduction (100 characters max)</Label>
                                 <Textarea
                                     id="edit-intro"
-                                    value={formData.intro || ''}
+                                    value={formData.intro ?? ''}
                                     onChange={(e) => handleInputChange('intro', e.target.value.slice(0, 100))}
                                     placeholder="Brief self-description..."
                                     className="min-h-[80px]"
                                     maxLength={100}
                                 />
                                 <div className="text-right text-sm text-muted-foreground mt-1">
-                                    {(formData.intro || '').length}/100
+                                    {(formData.intro ?? '').length}/100
                                 </div>
                             </div>
                         </div>
@@ -309,9 +357,9 @@ const EditProfileModal = ({ open, userProfile, onSave, onClose }) => {
 
                             {/* Soft Skills */}
                             <div>
-                                <Label>Soft Skills ({(formData.softSkills || []).length}/5)</Label>
+                                <Label>Soft Skills ({(formData.softSkills ?? []).length}/5)</Label>
                                 <div className="flex flex-wrap gap-2 mt-2">
-                                    {(formData.softSkills || []).map((skill, index) => (
+                                    {(formData.softSkills ?? []).map((skill, index) => (
                                         <Badge
                                             key={index}
                                             className="px-3 py-1 rounded-full border-0"
@@ -328,9 +376,9 @@ const EditProfileModal = ({ open, userProfile, onSave, onClose }) => {
 
                             {/* Hard Skills */}
                             <div>
-                                <Label>Hard Skills ({(formData.hardSkills || []).length}/5)</Label>
+                                <Label>Hard Skills ({(formData.hardSkills ?? []).length}/5)</Label>
                                 <div className="flex flex-wrap gap-2 mt-2">
-                                    {(formData.hardSkills || []).map((skill, index) => (
+                                    {(formData.hardSkills ?? []).map((skill, index) => (
                                         <Badge key={index} variant="default" className="bg-primary/20">
                                             {skill.skillName}
                                             <button onClick={() => removeSkill(index, 'hard')} className="ml-2">
@@ -376,7 +424,7 @@ const EditProfileModal = ({ open, userProfile, onSave, onClose }) => {
                                     </Button>
                                 </div>
                                 <div className="flex flex-wrap gap-2 mt-2">
-                                    {(formData.interest || []).map((interest, index) => (
+                                    {(formData.interest ?? []).map((interest, index) => (
                                         <Badge key={index} variant="outline">
                                             {interest.skillName}
                                             <button onClick={() => removeInterest(index)} className="ml-2">
@@ -464,7 +512,7 @@ const EditProfileModal = ({ open, userProfile, onSave, onClose }) => {
                                     <Label htmlFor="moduleCode">Module Code</Label>
                                     <Input
                                         id="moduleCode"
-                                        value={newModule.code}
+                                        value={newModule.classId}
                                         onChange={(e) => setNewModule(prev => ({ ...prev, code: e.target.value }))}
                                         placeholder="CS101"
                                     />
@@ -500,22 +548,22 @@ const EditProfileModal = ({ open, userProfile, onSave, onClose }) => {
                                 />
                             </div>
 
-                            <div className="flex space-x-3 pt-4">
+                            {/* <div className="flex space-x-3 pt-4">
                                 <Button variant="outline" onClick={() => {
                                     setShowModuleDialog(false);
                                     setEditingModule(null);
-                                    setNewModule({ code: '', name: '', prof: '', classId: '' });
+                                    setNewModule({ name: '', prof: '', classId: '' });
                                 }} className="flex-1">
                                     Cancel
                                 </Button>
                                 <Button
                                     onClick={editingModule ? updateModule : addModule}
                                     className="flex-1 bg-primary"
-                                    disabled={!newModule.code || !newModule.name}
+                                    disabled={!newModule.classId || !newModule.name}
                                 >
                                     {editingModule ? 'Update' : 'Add'} Module
                                 </Button>
-                            </div>
+                            </div> */}
                         </div>
                     </DialogContent>
                 </Dialog>
