@@ -257,20 +257,21 @@ const Navbar: React.FC<NavbarProps> = ({ session }) => {
                     </div>
                   )}
                   <button
-                    onClick={() => {
-                      signOut();
+                    onClick={async () => {
+                      await signOut();
                       closeMobileMenu();
                     }}
                     className="flex items-center space-x-3 w-full px-4 py-3 bg-gradient-to-r from-[#151b4d] to-[#8a704d] text-white rounded-lg hover:shadow-lg transition-all duration-200"
                   >
+
                     <LogOut className="w-5 h-5" />
                     <span className="font-medium">Sign Out</span>
                   </button>
                 </div>
               ) : (
                 <button
-                  onClick={() => {
-                    signIn();
+                  onClick={async () => {
+                    await signIn();
                     closeMobileMenu();
                   }}
                   className="flex items-center space-x-3 w-full px-4 py-3 bg-gradient-to-r from-[#151b4d] to-[#8a704d] text-white rounded-lg hover:shadow-lg transition-all duration-200"
