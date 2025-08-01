@@ -1,7 +1,6 @@
 "use client";
 
 import { signIn } from "next-auth/react";
-import { FaGoogle, FaDiscord } from "react-icons/fa";
 import { Card } from '~/components/ui/card';
 import Image from "next/image";
 import { Camera, Plus, X, Edit3, Mail, Users, MessageSquare, Star, GraduationCap, Heart } from 'lucide-react';
@@ -22,31 +21,35 @@ export default function LoginPage() {
     <div>
       <div className="bg-base-200">
         {/* Get Started Section */}
-        <div className="flex flex-col items-center justify-center min-h-[75vh] space-y-5 px-4 py-5">
+        <div className="mx-3 flex flex-col items-center justify-center min-h-[75vh] space-y-5 px-4 py-4">
           <div className="w-full max-w-md h-full">
-            <h3 className="text-2xl font-bold text-primary text-center">Get Started</h3>
+            <h3 className="text-2xl font-bold text-primary text-center mb-10">Get Started</h3>
 
             <div className="flex justify-center items-center my-4">
-              <div className="w-24 h-24">
+              <div className="w-30 h-30">
                 <Image
                   src="/images/CCSquare.jpeg"
                   alt="App Logo"
-                  width={100}
-                  height={100}
+                  width={150}
+                  height={150}
                   className="object-cover rounded-xl"
                   priority
                 />
               </div>
             </div>
 
-            <p className="text-muted-foreground leading-relaxed text-xs text-justify px-3">
+            <p className="text-muted-foreground leading-relaxed text-xs text-justify">
               CampusConnect is a student-centered platform designed to break down academic silos and foster meaningful connections across SMU.
+            </p>
+
+            <p className="mt-8 mb-5 text-muted-foreground leading-relaxed text-xs text-justify">
+              Create or login to your account using your university google account:
             </p>
 
             <Button
               onClick={() => signIn("google")}
               variant="outline"
-              className="my-3 w-full h-13 bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 text-sm font-medium shadow-sm mobile-button flex items-center justify-center space-x-3"
+              className="my-3 w-full h-13 bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 text-sm font-medium shadow-sm mobile-button flex items-center justify-center"
             >
               <>
                 <div className="w-5 h-5">
@@ -68,17 +71,11 @@ export default function LoginPage() {
         {/* About Section */}
         <Card className="w-full max-w-sm mb-8 p-6 bg-white/70 backdrop-blur-sm border border-primary/20">
           <div className="text-center">
-            <div className="flex flex-col items-center justify-center mb-3">
-              <h3 className="text-xl font-bold text-primary mt-2">About Us</h3>
-              {/* <div className="w-15 h-15 my-5 flex items-center justify-center">
-                <Image
-                  src="/images/CCLOGO.png"
-                  alt="App Logo"
-                  width={80}
-                  height={80}
-                  priority
-                />
-              </div> */}
+            <div className="flex items-center justify-center mb-3">
+              <div className="w-9 h-9 bg-primary/10 rounded-full flex items-center justify-center mr-3">
+                <GraduationCap className="w-6 h-6 text-primary" />
+              </div>
+              <h3 className="text-xl font-bold text-primary">About Us</h3>
             </div>
             <p className="text-muted-foreground leading-relaxed text-xs text-justify">
               CampusConnect is a student-centered platform designed to break down academic silos and foster meaningful connections across SMU. Whether you&apos;re looking for study partners, project collaborators, or simply want to expand your network, our platform makes it easy to discover fellow students who share your interests and academic goals.
