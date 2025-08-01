@@ -11,6 +11,27 @@ import { NextRequest } from "next/server";
 import React from "react";
 import type { Skill } from "~/types/skills";
 
+
+  const getAcademicYearLabel = (enrollmentYear?: number | string) => {
+    console.log("enrollmentYear>>", enrollmentYear);
+    if (!enrollmentYear) return "";
+    const year =
+      typeof enrollmentYear === "string"
+        ? parseInt(enrollmentYear, 10)
+        : enrollmentYear;
+    if (isNaN(year)) return "";
+    const currentYear = new Date().getFullYear();
+
+    if (year > currentYear) {
+      return `Pre-graduate (${year})`;
+    }
+    if (currentYear - year >= 6) {
+      return `Alumni (${year})`;
+    }
+    const yearNumber = currentYear - year + 1;
+    return `Y${yearNumber}`;
+  };
+
 export const runtime = "edge";
 
 export async function GET(
@@ -33,6 +54,8 @@ export async function GET(
     );
     
     console.log('OG: Response status:', userResponse.status);
+
+    
     
     if (!userResponse.ok) {
       console.log('OG: User fetch failed');
@@ -72,6 +95,7 @@ export async function GET(
 
     const user = await userResponse.json();
     console.log('OG: User data received:', !!user?.name);
+  
     
     if (!user?.name) {
       console.log('OG: No user name found');
@@ -116,7 +140,7 @@ export async function GET(
     const userCourse = user.course ? 
       user.course.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, (char: string) => char.toUpperCase()) : 
       'Computer Science';
-    const userYear = user.enrollmentYear ? `Y${user.enrollmentYear}` : 'Y1';
+    const userYear = getAcademicYearLabel(user.enrollmentYear)
     const userIntro = user.intro ?? 'Passionate student ready to connect and collaborate!';
     const userImage = user.image ?? '';
     
@@ -159,14 +183,14 @@ const allSkills = getTopSkills(user);
           }
         },
         
-        // Blue section (30% of width)
+     
         React.createElement(
           'div',
           {
             style: {
-              width: "330px",
+              width: "260px",
               height: "630px",
-              background: "linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%)",
+              background: "linear-gradient(135deg, #151b4d 0%, #151b4d 100%)",
             }
           }
         ),
@@ -174,9 +198,9 @@ const allSkills = getTopSkills(user);
         // Gold border
         React.createElement('div', {
           style: {
-            width: "18px",
+            width: "32px",
             height: "630px",
-            background: "linear-gradient(135deg, #d4af37 0%, #b8941f 100%)",
+            background: "linear-gradient(135deg, #8a704d 0%, #8a704d 100%)",
           }
         }),
         
@@ -185,7 +209,7 @@ const allSkills = getTopSkills(user);
           'div',
           {
             style: {
-              width: "888px",
+              width: "908px",
               height: "630px",
               background: "#ffffff",
               display: "flex",
@@ -209,8 +233,7 @@ const allSkills = getTopSkills(user);
               style: { 
                 fontSize: "64px", 
                 margin: 0,
-      
-                fontWeight: "800",
+                fontWeight: "900",
                 lineHeight: 1,
                 marginRight: "24px",
                 color: "#1e293b",
@@ -276,9 +299,6 @@ const allSkills = getTopSkills(user);
         } else {
           skillName = "Unknown";
         }
-
-        // Debug logging
-        console.log(`OG: Processing skill ${index}:`, skill, '-> name:', skillName);
 
         return React.createElement(
           'div',
