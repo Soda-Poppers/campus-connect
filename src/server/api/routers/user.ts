@@ -61,6 +61,64 @@ export const userRouter = createTRPCRouter({
     }
     return user;
   }),
+
+
+  getAllUsersByFilter: publicProcedure
+    .input(
+      z.object({
+        filters: z
+          .object({
+            name: z.string().optional(),
+            course: z.nativeEnum(Course).optional(),
+            modules: z.array(z.string()).optional()
+          })
+          .optional(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { filters } = input || {};
+
+      const users = await ctx.db.user.findMany({
+        where: {
+          ...(filters?.name && {
+            name: {
+              contains: filters.name,
+              mode: "insensitive",
+            },
+          }),
+          ...(filters?.course && { course: filters.course }),
+          ...(filters?.modules && {
+            Modules: {
+              some: {
+                moduleId: {
+                  in: filters.modules,
+                },
+              },
+            },
+          }),
+        },
+        select: {
+          id: true,
+          name: true,
+          course: true,
+          enrollmentYear: true,
+          hardSkills: true,
+          softSkills: true,
+          Modules: {
+            select: {
+              module: {
+                select: {
+                  classId: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      return users;
+    }),
+
   getUser: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
@@ -79,7 +137,7 @@ export const userRouter = createTRPCRouter({
       return user;
     }),
 
-     getUserCard: publicProcedure
+  getUserCard: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
       const user = await ctx.db.user.findUnique({
@@ -450,6 +508,9 @@ export const userRouter = createTRPCRouter({
     usersWithSharedCount.sort((a, b) => b.sharedModulesCount - a.sharedModulesCount);
 
     return usersWithSharedCount;
+
+
+
   }),
 
 });
