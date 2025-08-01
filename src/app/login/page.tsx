@@ -3,19 +3,33 @@
 import { signIn } from "next-auth/react";
 import { Card } from '~/components/ui/card';
 import Image from "next/image";
-import { Camera, Plus, X, Edit3, Mail, Users, MessageSquare, Star, GraduationCap, Heart } from 'lucide-react';
+import { GraduationCap, Heart } from 'lucide-react';
 import { useSearchParams } from "next/navigation";
 import { Button } from "~/components/ui/button";
+import { useState } from "react";
 
 export default function LoginPage() {
   const searchParams = useSearchParams();
   const error = searchParams.get("error");
+  const [isLoading, setIsLoading] = useState(false);
 
   const errorMessages: Record<string, string> = {
     OAuthAccountNotLinked:
       "That email is already linked with another provider. Please use the originally linked sign-in method.",
     AccessDenied: "Please use your school email.",
   };
+
+  const handleGoogleSignIn = async () => {
+    if (!isLoading) {
+      setIsLoading(true);
+      const result = await signIn("google", { redirect: false });
+
+      if (result?.error) {
+        setIsLoading(false);
+      }
+    }
+  };
+
 
   return (
     <div>
@@ -47,8 +61,9 @@ export default function LoginPage() {
             </p>
 
             <Button
-              onClick={() => signIn("google")}
+              onClick={handleGoogleSignIn}
               variant="outline"
+              disabled={isLoading}
               className="my-3 w-full h-13 bg-white hover:bg-gray-50 border border-gray-300 text-gray-700 text-sm font-medium shadow-sm mobile-button flex items-center justify-center"
             >
               <>
@@ -60,7 +75,8 @@ export default function LoginPage() {
                     <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
                   </svg>
                 </div>
-                <span>Continue with Google</span>
+                <span>{isLoading ? 'Loading...' : 'Continue with Google'}</span>
+
               </>
             </Button>
           </div>
@@ -146,7 +162,6 @@ export default function LoginPage() {
           </div>
         </div>
       </div>
-
     </div>
   );
 }
