@@ -35,6 +35,9 @@ export async function generateMetadata({
     }
   }
 
+  // const baseUrl =
+  //   process.env.NEXT_PUBLIC_BASE_URL ??
+  //   "https://campus-connect-nine-zeta.vercel.app";
   const baseUrl =
     process.env.NEXT_PUBLIC_BASE_URL ??
     "https://campus-connect-nine-zeta.vercel.app";

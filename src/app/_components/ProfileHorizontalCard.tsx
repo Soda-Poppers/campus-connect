@@ -12,8 +12,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Card } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
 import { Course } from "@prisma/client"; // Import the Prisma-generated enum
-import { ChevronDown, ChevronUp, Copy } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
 
 const CourseDisplayNames: Record<Course, string> = {
   [Course.COMPUTER_SCIENCE]: "Computer Science",

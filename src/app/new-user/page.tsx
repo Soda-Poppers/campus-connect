@@ -32,7 +32,6 @@ import { Label } from "~/components/ui/label";
 import { Input } from "~/components/ui/input";
 // import SocialMediaInput from "../_components/WelcomeFlow/SocialMediaInput";
 
-
 // Types based on your Prisma schema
 interface Module {
   id: string;
@@ -57,7 +56,7 @@ interface FormData {
   interests: Skill[];
   hardSkills: Skill[];
   softSkills: Skill[];
-  socialMedia: SocialMedia[]
+  socialMedia: SocialMedia[];
 }
 
 interface Step {
@@ -110,7 +109,7 @@ const ProfileWelcomeFlow: React.FC = () => {
     interests: [],
     hardSkills: [],
     softSkills: [],
-    socialMedia: []
+    socialMedia: [],
   });
 
   // Module search state
@@ -127,7 +126,7 @@ const ProfileWelcomeFlow: React.FC = () => {
     classId: "",
   });
 
-  const platforms = ['telegram', 'instagram', 'linkedin', 'email']
+  const platforms = ["telegram", "instagram", "linkedin", "email"];
 
   const steps: Step[] = [
     {
@@ -272,7 +271,7 @@ const ProfileWelcomeFlow: React.FC = () => {
     setIsSubmitting(true);
 
     try {
-      console.log(formData)
+      console.log(formData);
       await createUserMutation.mutateAsync({
         name: formData.name,
         enrollmentYear: parseInt(formData.enrollmentYear),
@@ -282,7 +281,7 @@ const ProfileWelcomeFlow: React.FC = () => {
         interests: formData.interests || undefined,
         hardSkills: formData.hardSkills || [],
         softSkills: formData.softSkills || [],
-        socialMedia: formData.socialMedia || []
+        socialMedia: formData.socialMedia || [],
       });
 
       setIsCompleted(true);
@@ -380,7 +379,7 @@ const ProfileWelcomeFlow: React.FC = () => {
               placeholder="Enter your full name"
               value={formData.name}
               onChange={(e) => updateFormField("name", e.target.value)}
-              className="w-full rounded-xl border-2 border-gray-200 px-4 py-3 text-lg transition-colors focus:border-primary focus:outline-none"
+              className="focus:border-primary w-full rounded-xl border-2 border-gray-200 px-4 py-3 text-lg transition-colors focus:outline-none"
               autoFocus
             />
           </div>
@@ -418,7 +417,7 @@ const ProfileWelcomeFlow: React.FC = () => {
                   updateFormField("enrollmentYear", clamped.toString());
                 }
               }}
-              className="w-full rounded-xl border-2 border-gray-200 px-4 py-3 text-lg transition-colors focus:border-primary-500 focus:outline-none"
+              className="focus:border-primary-500 w-full rounded-xl border-2 border-gray-200 px-4 py-3 text-lg transition-colors focus:outline-none"
               autoFocus
             />
             {formData.enrollmentYear &&
@@ -451,10 +450,11 @@ const ProfileWelcomeFlow: React.FC = () => {
                 key={key}
                 type="button"
                 onClick={() => updateFormField("course", value)}
-                className={`w-full rounded-xl border-2 p-4 text-left transition-all ${formData.course === value
-                  ? "border-primary  bg-primary text-white"
-                  : "border-gray-200 hover:border-gray-300"
-                  }`}
+                className={`w-full rounded-xl border-2 p-4 text-left transition-all ${
+                  formData.course === value
+                    ? "border-primary bg-primary text-white"
+                    : "border-gray-200 hover:border-gray-300"
+                }`}
               >
                 {CourseDisplayNames[value]}
               </button>
@@ -475,12 +475,12 @@ const ProfileWelcomeFlow: React.FC = () => {
                   {formData.modules.map((module) => (
                     <div
                       key={module.id}
-                      className="flex items-center gap-2 rounded-lg bg-primary px-3 py-2 text-white "
+                      className="bg-primary flex items-center gap-2 rounded-lg px-3 py-2 text-white"
                     >
                       <span className="text-sm">
                         <span className="font-medium">{module.name}</span>
                         {module.classId && (
-                          <span className="text-primary ">
+                          <span className="text-primary">
                             {" "}
                             ({module.classId})
                           </span>
@@ -513,53 +513,53 @@ const ProfileWelcomeFlow: React.FC = () => {
                     placeholder="Search for modules..."
                     value={moduleSearch}
                     onChange={(e) => setModuleSearch(e.target.value)}
-                    className="w-full rounded-xl border-2 border-gray-200 py-3 pr-4 pl-10 text-lg transition-colors focus:border-primary-500 focus:outline-none"
+                    className="focus:border-primary-500 w-full rounded-xl border-2 border-gray-200 py-3 pr-4 pl-10 text-lg transition-colors focus:outline-none"
                   />
                 </div>
 
                 {/* Search results */}
                 {(moduleResults.length > 0 ||
                   (moduleSearch.length > 0 && !isSearching)) && (
-                    <div className="absolute top-full right-0 left-0 z-10 mt-2 max-h-60 overflow-y-auto rounded-xl border-2 border-gray-200 bg-white shadow-lg">
-                      {moduleResults.map((module) => (
+                  <div className="absolute top-full right-0 left-0 z-10 mt-2 max-h-60 overflow-y-auto rounded-xl border-2 border-gray-200 bg-white shadow-lg">
+                    {moduleResults.map((module) => (
+                      <button
+                        key={module.id}
+                        type="button"
+                        onClick={() => addModule(module)}
+                        className="w-full border-b border-gray-100 p-3 text-left last:border-b-0 hover:bg-gray-50"
+                      >
+                        <div className="font-medium">{module.name}</div>
+                        <div className="text-sm text-gray-600">
+                          {module.classId} • {module.prof}
+                        </div>
+                      </button>
+                    ))}
+
+                    {moduleResults.length === 0 &&
+                      moduleSearch.length > 0 &&
+                      !isSearching && (
                         <button
-                          key={module.id}
                           type="button"
-                          onClick={() => addModule(module)}
-                          className="w-full border-b border-gray-100 p-3 text-left last:border-b-0 hover:bg-gray-50"
+                          onClick={showCreateNewModuleForm}
+                          className="w-full border-b border-gray-100 p-3 text-left hover:bg-gray-50"
                         >
-                          <div className="font-medium">{module.name}</div>
-                          <div className="text-sm text-gray-600">
-                            {module.classId} • {module.prof}
+                          <div className="flex items-center gap-2">
+                            <Plus className="h-4 w-4" />
+                            <span>
+                              Create new module: &quot;{moduleSearch}&quot;
+                            </span>
                           </div>
                         </button>
-                      ))}
-
-                      {moduleResults.length === 0 &&
-                        moduleSearch.length > 0 &&
-                        !isSearching && (
-                          <button
-                            type="button"
-                            onClick={showCreateNewModuleForm}
-                            className="w-full border-b border-gray-100 p-3 text-left hover:bg-gray-50"
-                          >
-                            <div className="flex items-center gap-2">
-                              <Plus className="h-4 w-4" />
-                              <span>
-                                Create new module: &quot;{moduleSearch}&quot;
-                              </span>
-                            </div>
-                          </button>
-                        )}
-                    </div>
-                  )}
+                      )}
+                  </div>
+                )}
               </div>
             )}
 
             {/* New Module Form */}
             {showNewModuleForm && (
-              <div className="rounded-xl border-2 border-primary-200 bg-primary-50 p-4">
-                <h4 className="mb-3 font-medium text-primary-800">
+              <div className="border-primary-200 bg-primary-50 rounded-xl border-2 p-4">
+                <h4 className="text-primary-800 mb-3 font-medium">
                   Create New Module
                 </h4>
                 <div className="space-y-3">
@@ -574,7 +574,7 @@ const ProfileWelcomeFlow: React.FC = () => {
                       onChange={(e) =>
                         updateNewModuleField("name", e.target.value)
                       }
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:outline-none"
+                      className="focus:border-primary-500 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none"
                       autoFocus
                     />
                   </div>
@@ -590,7 +590,7 @@ const ProfileWelcomeFlow: React.FC = () => {
                       onChange={(e) =>
                         updateNewModuleField("classId", e.target.value)
                       }
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:outline-none"
+                      className="focus:border-primary-500 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none"
                     />
                   </div>
 
@@ -605,7 +605,7 @@ const ProfileWelcomeFlow: React.FC = () => {
                       onChange={(e) =>
                         updateNewModuleField("prof", e.target.value)
                       }
-                      className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary-500 focus:outline-none"
+                      className="focus:border-primary-500 w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none"
                     />
                   </div>
 
@@ -618,7 +618,7 @@ const ProfileWelcomeFlow: React.FC = () => {
                         !newModuleForm.prof.trim() ||
                         !newModuleForm.classId.trim()
                       }
-                      className="flex items-center gap-1 rounded-lg bg-primary px-3 py-2 text-sm text-white transition-colors hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
+                      className="bg-primary hover:bg-primary-700 flex items-center gap-1 rounded-lg px-3 py-2 text-sm text-white transition-colors disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       <Check className="h-4 w-4" />
                       Add Module
@@ -670,20 +670,27 @@ const ProfileWelcomeFlow: React.FC = () => {
       case "socialMedia":
         return (
           <div className="space-y-1">
-            <label className="block text-sm font-medium">Social Media (optional)</label>
+            <label className="block text-sm font-medium">
+              Social Media (optional)
+            </label>
             <div className="space-y-2">
               <div className="space-y-3">
-
                 <div>
                   <Label htmlFor="edit-telegram">Telegram</Label>
                   <Input
                     id="edit-telegram"
-                    value={formData.socialMedia.find(social => social.platform === 'telegram')?.username || ''}
+                    value={
+                      formData.socialMedia.find(
+                        (social) => social.platform === "telegram",
+                      )?.username ?? ""
+                    }
                     onChange={(e) => {
-                      const updatedSocialMedia = formData.socialMedia.filter(social => social.platform !== 'telegram');
-                      updateFormField('socialMedia', [
+                      const updatedSocialMedia = formData.socialMedia.filter(
+                        (social) => social.platform !== "telegram",
+                      );
+                      updateFormField("socialMedia", [
                         ...updatedSocialMedia,
-                        { platform: 'telegram', username: e.target.value }
+                        { platform: "telegram", username: e.target.value },
                       ]);
                     }}
                     placeholder="@username"
@@ -694,12 +701,18 @@ const ProfileWelcomeFlow: React.FC = () => {
                   <Label htmlFor="edit-instagram">Instagram</Label>
                   <Input
                     id="edit-instagram"
-                    value={formData.socialMedia.find(social => social.platform === 'instagram')?.username || ''}
+                    value={
+                      formData.socialMedia.find(
+                        (social) => social.platform === "instagram",
+                      )?.username ?? ""
+                    }
                     onChange={(e) => {
-                      const updatedSocialMedia = formData.socialMedia.filter(social => social.platform !== 'instagram');
-                      updateFormField('socialMedia', [
+                      const updatedSocialMedia = formData.socialMedia.filter(
+                        (social) => social.platform !== "instagram",
+                      );
+                      updateFormField("socialMedia", [
                         ...updatedSocialMedia,
-                        { platform: 'instagram', username: e.target.value }
+                        { platform: "instagram", username: e.target.value },
                       ]);
                     }}
                     placeholder="@username"
@@ -710,12 +723,18 @@ const ProfileWelcomeFlow: React.FC = () => {
                   <Label htmlFor="edit-linkedin">LinkedIn</Label>
                   <Input
                     id="edit-linkedin"
-                    value={formData.socialMedia.find(social => social.platform === 'linkedin')?.username || ''}
+                    value={
+                      formData.socialMedia.find(
+                        (social) => social.platform === "linkedin",
+                      )?.username ?? ""
+                    }
                     onChange={(e) => {
-                      const updatedSocialMedia = formData.socialMedia.filter(social => social.platform !== 'linkedin');
-                      updateFormField('socialMedia', [
+                      const updatedSocialMedia = formData.socialMedia.filter(
+                        (social) => social.platform !== "linkedin",
+                      );
+                      updateFormField("socialMedia", [
                         ...updatedSocialMedia,
-                        { platform: 'linkedin', username: e.target.value }
+                        { platform: "linkedin", username: e.target.value },
                       ]);
                     }}
                     placeholder="linkedin.com/in/username"
@@ -726,26 +745,30 @@ const ProfileWelcomeFlow: React.FC = () => {
                   <Label htmlFor="edit-email">Email</Label>
                   <Input
                     id="edit-email"
-                    value={formData.socialMedia.find(social => social.platform === 'email')?.username || ''}
+                    value={
+                      formData.socialMedia.find(
+                        (social) => social.platform === "email",
+                      )?.username ?? ""
+                    }
                     onChange={(e) => {
-                      const updatedSocialMedia = formData.socialMedia.filter(social => social.platform !== 'email');
-                      updateFormField('socialMedia', [
+                      const updatedSocialMedia = formData.socialMedia.filter(
+                        (social) => social.platform !== "email",
+                      );
+                      updateFormField("socialMedia", [
                         ...updatedSocialMedia,
-                        { platform: 'email', username: e.target.value }
+                        { platform: "email", username: e.target.value },
                       ]);
                     }}
                     placeholder="your.email@smu.edu.sg"
                   />
                 </div>
               </div>
-
             </div>
           </div>
-        )
+        );
 
       default:
         return <div>Invalid step</div>;
-
     }
   };
 
@@ -753,7 +776,7 @@ const ProfileWelcomeFlow: React.FC = () => {
 
   if (isCompleted) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-secondary/50 to-primary p-4">
+      <div className="from-secondary/50 to-primary flex min-h-screen items-center justify-center bg-gradient-to-br p-4">
         <div className="w-full max-w-2xl">
           <div className="rounded-2xl bg-white p-8 text-center shadow-xl">
             {/* Success animation/icon */}
@@ -773,7 +796,7 @@ const ProfileWelcomeFlow: React.FC = () => {
             </h1>
             <p className="mb-2 text-lg text-gray-700">
               Hi{" "}
-              <span className="font-semibold text-primary">
+              <span className="text-primary font-semibold">
                 {formData.name}
               </span>
               !
@@ -791,7 +814,7 @@ const ProfileWelcomeFlow: React.FC = () => {
               <Link
                 type="button"
                 href="/profile"
-                className="btn btn-wite flex items-center justify-center gap-2 rounded-xl bg-primary px-8 py-3 font-medium text-white transition-colors hover:bg-primary-700"
+                className="btn btn-wite bg-primary hover:bg-primary-700 flex items-center justify-center gap-2 rounded-xl px-8 py-3 font-medium text-white transition-colors"
               >
                 <BookOpen className="h-5 w-5" />
                 Go to Profile
@@ -803,7 +826,7 @@ const ProfileWelcomeFlow: React.FC = () => {
     );
   }
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-primary-50 to-indigo-100 p-4">
+    <div className="from-primary-50 flex min-h-screen items-center justify-center bg-gradient-to-br to-indigo-100 p-4">
       <div className="w-full max-w-2xl">
         {/* Progress bar */}
         <div className="mb-8">
@@ -815,7 +838,7 @@ const ProfileWelcomeFlow: React.FC = () => {
           </div>
           <div className="h-2 w-full rounded-full bg-gray-200">
             <div
-              className="h-2 rounded-full bg-secondary transition-all duration-300"
+              className="bg-secondary h-2 rounded-full transition-all duration-300"
               style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
             />
           </div>
@@ -825,7 +848,7 @@ const ProfileWelcomeFlow: React.FC = () => {
         <div className="rounded-2xl bg-white p-8 shadow-xl">
           {/* Step header */}
           <div className="mb-8 text-center">
-            <div className="mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full bg-primary/100">
+            <div className="bg-primary/100 mb-4 inline-flex h-16 w-16 items-center justify-center rounded-full">
               {IconComponent && (
                 <IconComponent className="h-8 w-8 text-white" />
               )}
@@ -858,7 +881,7 @@ const ProfileWelcomeFlow: React.FC = () => {
                 type="button"
                 onClick={handleSubmit}
                 disabled={isSubmitting}
-                className="flex items-center gap-2 rounded-xl bg-primary px-8 py-3 text-white transition-colors hover:bg-primary disabled:cursor-not-allowed disabled:opacity-50"
+                className="bg-primary hover:bg-primary flex items-center gap-2 rounded-xl px-8 py-3 text-white transition-colors disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isSubmitting ? (
                   <>
@@ -877,8 +900,7 @@ const ProfileWelcomeFlow: React.FC = () => {
                 type="button"
                 onClick={handleNext}
                 disabled={!isStepValid()}
-                className="flex items-center gap-2 rounded-xl bg-primary px-8 py-3 text-white transition-colors hover:bg-primary
-                 disabled:cursor-not-allowed disabled:opacity-50"
+                className="bg-primary hover:bg-primary flex items-center gap-2 rounded-xl px-8 py-3 text-white transition-colors disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Next
                 <ChevronRight className="h-5 w-5" />

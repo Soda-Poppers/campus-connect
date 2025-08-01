@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 
 import { auth } from "~/server/auth";
 import { api, HydrateClient } from "~/trpc/server";
+import HorizontalNamecard from "./_components/ProfileHorizontalCard";
 
 export default async function Home() {
   // const hello = await api.post.hello({ text: "from tRPC" });
@@ -11,13 +12,20 @@ export default async function Home() {
   if (!session?.user) {
     redirect("/login");
   }
-  // if (session?.user) {
-  //   void api.post.getLatest.prefetch();
-  // }
+
+  let user;
+  if (session?.user) {
+    user = await api.user.getUser({ id: session.user.id });
+  }
+  if (!user) {
+    redirect("/login"); // or wherever you want to redirect for profile setup
+  }
 
   return (
     <HydrateClient>
-      <main className="container flex min-h-screen"></main>
+      <main className="container mx-auto flex min-h-screen">
+        <HorizontalNamecard user={user} />
+      </main>
     </HydrateClient>
   );
 }

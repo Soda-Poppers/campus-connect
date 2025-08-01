@@ -131,7 +131,7 @@ const Navbar: React.FC<NavbarProps> = ({ session }) => {
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-1">
             <Link
-              href="/"
+              href="/forum"
               className="flex items-center space-x-2 px-4 py-2 rounded-lg text-gray-700 hover:text-[#151b4d] hover:bg-gray-50 transition-all duration-200 group"
             >
               <Home className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
@@ -214,12 +214,12 @@ const Navbar: React.FC<NavbarProps> = ({ session }) => {
                     className="flex items-center gap-3 px-4 py-3 h-14 text-gray-700 hover:text-[#151b4d] hover:bg-gray-50 transition-all duration-200 border-b border-gray-200"
                   >
                     <Compass className="w-5 h-5 text-gray-500" />
-                    <span className="font-medium ml-3">Discovery</span>
+                    <span className="font-medium ml-3">Discover</span>
                   </Link>
 
                   {/* Forum Link */}
                   <Link
-                    href="/"
+                    href="/forum"
                     onClick={closeMobileMenu}
                     className="flex items-center gap-3 px-4 py-3 h-14 text-gray-700 hover:text-[#151b4d] hover:bg-gray-50 transition-all duration-200 border-b border-gray-200"
                   >
