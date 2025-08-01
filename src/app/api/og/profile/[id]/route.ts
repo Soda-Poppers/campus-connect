@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { ImageResponse } from "next/og";
 import { NextRequest } from "next/server";
@@ -107,22 +109,22 @@ export async function GET(
     console.log('OG: Generating image for:', user.name);
 
     // Extract user data with fallbacks
-    const userName = user.name || 'Unknown User';
+    const userName = user.name ?? 'Unknown User';
     const userCourse = user.course ? 
       user.course.replace(/_/g, ' ').toLowerCase().replace(/\b\w/g, (char: string) => char.toUpperCase()) : 
       'Computer Science';
     const userYear = user.enrollmentYear ? `Y${user.enrollmentYear}` : 'Y1';
-    const userIntro = user.intro || 'Passionate student ready to connect and collaborate!';
-    const userImage = user.image || '';
+    const userIntro = user.intro ?? 'Passionate student ready to connect and collaborate!';
+    const userImage = user.image ?? '';
     
     // Extract skills (limit to 3 for display)
-    const hardSkills = user.hardSkills?.slice(0, 3) || [];
-    const allSkills = [...hardSkills, ...(user.softSkills?.slice(0, 3 - hardSkills.length) || [])];
+    const hardSkills = user.hardSkills?.slice(0, 3) ?? [];
+    const allSkills = [...hardSkills, ...(user.softSkills?.slice(0, 3 - hardSkills.length) ?? [])];
     
     // Extract social media - find telegram
-    const socialMedia = user.socialMedia || [];
+    const socialMedia = user.socialMedia ?? [];
     const telegramAccount = socialMedia.find((s: any) => s.platform === 'telegram');
-    const telegramHandle = telegramAccount?.username || '';
+    const telegramHandle = telegramAccount?.username ?? '';
 
     // Main namecard-style profile image
     return new ImageResponse(
@@ -292,7 +294,7 @@ export async function GET(
                     color: "white",
                   }
                 },
-                skill.skillName || skill
+                skill.skillName ?? skill
               )
             )
           ) : null,
