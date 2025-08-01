@@ -5,9 +5,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 
+import type { User } from "@prisma/client";
 import { ImageResponse } from "next/og";
 import { NextRequest } from "next/server";
 import React from "react";
+import type { Skill } from "~/types/skills";
 
 export const runtime = "edge";
 
@@ -119,13 +121,24 @@ export async function GET(
     const userImage = user.image ?? '';
     
     // Extract skills (limit to 3 for display)
-    const hardSkills = user.hardSkills?.slice(0, 3) ?? [];
-    const allSkills = [...hardSkills, ...(user.softSkills?.slice(0, 3 - hardSkills.length) ?? [])];
+    // const hardSkills = user.hardSkills?.slice(0, 3) ?? [];
+type MaybeSkill = Skill | string | undefined;
+const getTopSkills = (user: any, limit = 3): MaybeSkill[] => {
+  const hard: MaybeSkill[] = Array.isArray(user.hardSkills) ? user.hardSkills.slice(0, limit) : [];
+  const soft: MaybeSkill[] = Array.isArray(user.softSkills)
+    ? user.softSkills.slice(0, Math.max(0, limit - hard.length))
+    : [];
+  return [...hard, ...soft].slice(0, limit);
+};
+
+const allSkills = getTopSkills(user);
     
     // Extract social media - find telegram
     const socialMedia = user.socialMedia ?? [];
     const telegramAccount = socialMedia.find((s: any) => s.platform === 'telegram');
     const telegramHandle = telegramAccount?.username ?? '';
+
+    
 
     // Main namecard-style profile image
     return new ImageResponse(
@@ -147,7 +160,7 @@ export async function GET(
           'div',
           {
             style: {
-              width: "360px",
+              width: "330px",
               height: "630px",
               background: "linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%)",
             }
@@ -157,7 +170,7 @@ export async function GET(
         // Gold border
         React.createElement('div', {
           style: {
-            width: "12px",
+            width: "18px",
             height: "630px",
             background: "linear-gradient(135deg, #d4af37 0%, #b8941f 100%)",
           }
@@ -168,7 +181,7 @@ export async function GET(
           'div',
           {
             style: {
-              width: "828px",
+              width: "888px",
               height: "630px",
               background: "#ffffff",
               display: "flex",
@@ -192,6 +205,7 @@ export async function GET(
               style: { 
                 fontSize: "64px", 
                 margin: 0,
+      
                 fontWeight: "800",
                 lineHeight: 1,
                 marginRight: "24px",
@@ -237,35 +251,44 @@ export async function GET(
           }, `SMU ${userCourse} ${userYear}`),
           
           // Skills badges
-          allSkills.length > 0 ? React.createElement(
-            'div',
-            {
-              style: {
-                display: "flex",
-                gap: "16px",
-                marginBottom: "32px",
-                flexWrap: "wrap",
-              }
+         allSkills.length > 0
+  ? React.createElement(
+      'div',
+      {
+        style: {
+          display: "flex",
+          gap: "16px",
+          marginBottom: "32px",
+          flexWrap: "wrap",
+        },
+      },
+      ...allSkills.map((skill: MaybeSkill, index: number) => {
+        const name =
+          typeof skill === "string"
+            ? skill
+            : skill && typeof skill === "object" && "skillName" in skill
+            ? skill.skillName
+            : "Unknown";
+
+        return React.createElement(
+          'div',
+          {
+            key: `${name ?? "skill"}-${index}`,
+            style: {
+              background: "#a78058",
+              borderRadius: "50px",
+              padding: "12px 24px",
+              fontSize: "20px",
+              fontWeight: 600,
+              color: "white",
+              display: "inline-block",
             },
-            ...allSkills.map((skill: any, index: number) => 
-              React.createElement(
-                'div',
-                {
-                  key: index,
-                  style: {
-                    background: "#a78058",
-                    borderRadius: "50px",
-                    padding: "12px 24px",
-                    fontSize: "20px",
-                    fontWeight: "600",
-                    color: "white",
-                  }
-                },
-                skill.skillName ?? skill
-              )
-            )
-          ) : null,
-          
+          },
+          name
+        );
+      })
+    )
+  : null,
           // Intro/description
           React.createElement('p', { 
             style: { 
@@ -284,12 +307,12 @@ export async function GET(
             src: userImage,
             style: {
               position: "absolute",
-              left: "246px", // 360 - 140 + 6 (center on gold border)
+              left: "199px", // 360 - 140 + 6 (center on gold border)
               top: "175px", // (630 - 280) / 2
               width: "280px",
               height: "280px",
               borderRadius: "140px",
-              border: "8px solid white",
+              border: "12px solid white",
               objectFit: "cover",
               zIndex: "10",
             }
