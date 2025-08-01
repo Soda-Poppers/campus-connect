@@ -4,6 +4,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-call */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
+
 import { ImageResponse } from "next/og";
 import { NextRequest } from "next/server";
 import React from "react";
@@ -132,83 +133,56 @@ export async function GET(
         'div',
         {
           style: {
-            background: "linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%)",
             width: "100%",
             height: "100%",
             display: "flex",
-            padding: "60px",
             fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif',
             position: "relative",
             overflow: "hidden",
           }
         },
-        // Decorative accent bar
+        
+        // Blue section (30% of width)
+        React.createElement(
+          'div',
+          {
+            style: {
+              width: "30%",
+              height: "100%",
+              background: "linear-gradient(135deg, #1e3a8a 0%, #3730a3 100%)",
+              position: "relative",
+            }
+          }
+        ),
+        
+        // Gold border
         React.createElement('div', {
           style: {
             position: "absolute",
-            left: 0,
+            left: "30%",
             top: 0,
-            width: "8px",
+            width: "12px",
             height: "100%",
-            background: "#a78058",
+            background: "linear-gradient(135deg, #d4af37 0%, #b8941f 100%)",
+            zIndex: 1,
           }
         }),
         
-        // Left side - Profile photo
+        // White section (70% of width)
         React.createElement(
           'div',
           {
             style: {
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              width: "400px",
-              paddingRight: "60px",
-            }
-          },
-          userImage ? 
-            React.createElement('img', {
-              src: userImage,
-              style: {
-                width: "280px",
-                height: "280px",
-                borderRadius: "50%",
-                border: "8px solid white",
-                objectFit: "cover",
-              }
-            }) :
-            React.createElement(
-              'div',
-              {
-                style: {
-                  width: "280px",
-                  height: "280px",
-                  borderRadius: "50%",
-                  border: "8px solid white",
-                  background: "linear-gradient(135deg, #a78058 0%, #8a6f47 100%)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: "120px",
-                  fontWeight: "bold",
-                  color: "white",
-                }
-              },
-              userName.split(' ').map((n: string) => n[0]).join('').substring(0, 2)
-            )
-        ),
-        
-        // Right side - Content
-        React.createElement(
-          'div',
-          {
-            style: {
-              flex: 1,
+              width: "70%",
+              height: "100%",
+              background: "#ffffff",
+              position: "absolute",
+              right: 0,
+              top: 0,
               display: "flex",
               flexDirection: "column",
               justifyContent: "center",
-              color: "white",
-              paddingLeft: "40px",
+              padding: "60px 60px 60px 120px",
             }
           },
           
@@ -229,6 +203,7 @@ export async function GET(
                 fontWeight: "800",
                 lineHeight: 1,
                 marginRight: "24px",
+                color: "#1e293b",
               } 
             }, userName),
             telegramHandle ? React.createElement(
@@ -237,22 +212,22 @@ export async function GET(
                 style: {
                   display: "flex",
                   alignItems: "center",
-                  fontSize: "24px",
-                  color: "#93c5fd",
+                  fontSize: "28px",
+                  color: "#0ea5e9",
                   fontWeight: "500",
                 }
               },
               React.createElement('div', {
                 style: {
-                  width: "32px",
-                  height: "32px",
+                  width: "36px",
+                  height: "36px",
                   borderRadius: "50%",
                   background: "#0ea5e9",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
                   marginRight: "12px",
-                  fontSize: "16px",
+                  fontSize: "18px",
                 }
               }, '📱'),
               `@${telegramHandle}`
@@ -262,9 +237,9 @@ export async function GET(
           // Course and year
           React.createElement('p', { 
             style: { 
-              fontSize: "32px", 
-              margin: "0 0 32px 0",
-              color: "#cbd5e1",
+              fontSize: "36px", 
+              margin: "0 0 40px 0",
+              color: "#475569",
               fontWeight: "500",
             } 
           }, `SMU ${userCourse} ${userYear}`),
@@ -276,7 +251,7 @@ export async function GET(
               style: {
                 display: "flex",
                 gap: "16px",
-                marginBottom: "32px",
+                marginBottom: "40px",
                 flexWrap: "wrap",
               }
             },
@@ -288,8 +263,8 @@ export async function GET(
                   style: {
                     background: "#a78058",
                     borderRadius: "50px",
-                    padding: "12px 24px",
-                    fontSize: "20px",
+                    padding: "14px 28px",
+                    fontSize: "22px",
                     fontWeight: "600",
                     color: "white",
                   }
@@ -302,11 +277,11 @@ export async function GET(
           // Intro/description
           React.createElement('p', { 
             style: { 
-              fontSize: "28px", 
+              fontSize: "30px", 
               margin: 0,
-              color: "#e2e8f0",
+              color: "#334155",
               lineHeight: 1.4,
-              maxWidth: "600px",
+              maxWidth: "500px",
             } 
           }, userIntro),
           
@@ -315,14 +290,62 @@ export async function GET(
             'div',
             {
               style: {
-                marginTop: "40px",
-                fontSize: "20px",
-                color: "#94a3b8",
+                position: "absolute",
+                bottom: "40px",
+                right: "60px",
+                fontSize: "22px",
+                color: "#64748b",
                 fontWeight: "500",
               }
             },
             'Created by CampusConnect'
           )
+        ),
+        
+        // Profile photo - centered on the gold border
+        React.createElement(
+          'div',
+          {
+            style: {
+              position: "absolute",
+              left: "calc(30% + 6px - 140px)",
+              top: "50%",
+              transform: "translateY(-50%)",
+              zIndex: 10,
+            }
+          },
+          userImage ? 
+            React.createElement('img', {
+              src: userImage,
+              style: {
+                width: "280px",
+                height: "280px",
+                borderRadius: "50%",
+                border: "8px solid white",
+                objectFit: "cover",
+                boxShadow: "0 20px 40px rgba(0, 0, 0, 0.15)",
+              }
+            }) :
+            React.createElement(
+              'div',
+              {
+                style: {
+                  width: "280px",
+                  height: "280px",
+                  borderRadius: "50%",
+                  border: "8px solid white",
+                  background: "linear-gradient(135deg, #a78058 0%, #8a6f47 100%)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  fontSize: "120px",
+                  fontWeight: "bold",
+                  color: "white",
+                  boxShadow: "0 20px 40px rgba(0, 0, 0, 0.15)",
+                }
+              },
+              userName.split(' ').map((n: string) => n[0]).join('').substring(0, 2)
+            )
         )
       ),
       {
