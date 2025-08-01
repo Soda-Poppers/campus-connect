@@ -1,6 +1,6 @@
 
 import { NextRequest, NextResponse } from "next/server";
-import { db } from "@/server/db"; // adjust based on your Prisma setup
+import { db } from "~/server/db"; // adjust based on your Prisma setup
 
 export async function GET(req: NextRequest) {
   const id = req.nextUrl.searchParams.get("id");

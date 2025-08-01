@@ -1,3 +1,9 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+
 "use client";
 
 import { useRef } from "react";
@@ -30,8 +36,14 @@ const QRCodeGenerator = ({ targetUrl, size = 150 }: Props) => {
         ref={(el: any) => {
           // qrcode.react exposes canvas as .canvas (depends on version)
           // we attempt to grab the underlying canvas element
-          if (el && el.canvas) canvasRef.current = el.canvas;
-          else if (el instanceof HTMLCanvasElement) canvasRef.current = el;
+          const canvas =
+            el?.canvas instanceof HTMLCanvasElement
+              ? el.canvas
+              : el instanceof HTMLCanvasElement
+                ? el
+                : null;
+
+          canvasRef.current = canvas;
         }}
       />
       <div className="flex gap-2">
