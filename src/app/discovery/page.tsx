@@ -20,6 +20,7 @@ import {
 import { api } from '~/trpc/react';
 import { Course } from '@prisma/client';
 import type { Skill } from '~/types/skills';
+import { useRouter } from 'next/navigation';
 
 type Filters = {
     name: string,
@@ -35,6 +36,7 @@ type Users = {
     id: string; // Assuming 'id' is a string in your database schema
     name: string;
     course: string;
+    image: string;
     enrollmentYear: number; // Assuming 'enrollmentYear' is a number
     hardSkills: Skill[]; // Assuming 'hardSkills' is an array of strings
     softSkills: Skill[]; // Assuming 'softSkills' is an array of strings
@@ -51,6 +53,7 @@ const courseOptions = Object.entries(Course).map(([key, value]) => ({
 }));
 
 const DiscoveryPage = () => {
+    const router = useRouter();
     const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
     const [activeFilters, setActiveFilters] = useState<ModuleFilter[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
@@ -93,11 +96,12 @@ const DiscoveryPage = () => {
         if (getAllUserByFilter.data) {
             const mappedUsers = getAllUserByFilter.data.map(user => ({
                 id: user.id,
-                name: user.name || '',
-                course: user.course || '',
-                enrollmentYear: user.enrollmentYear || 2000,
+                name: user.name ?? '',
+                course: user.course ?? '',
+                enrollmentYear: user.enrollmentYear ?? 2000,
                 hardSkills: user.hardSkills as Skill[],
                 softSkills: user.softSkills as Skill[],
+                image: user.image ?? '',
                 Modules: user.Modules,
             }));
             setUsers(mappedUsers);
@@ -183,20 +187,21 @@ const DiscoveryPage = () => {
                                 <Eye className="w-4 h-4 mr-2" />
                                 View
                             </Button>
-                            <Button size="sm" className="bg-primary mobile-button">
-                                <MessageCircle className="w-4 h-4 mr-2" />
-                                Connect
-                            </Button>
                         </div>
                     </div>
                 </Card>
             );
         }
 
+        const navigateUser = (userId: string) => {
+            router.push(`/profile/${userId}/view`);
+        };
+
         return (
-            <Card className="p-5 hover:shadow-lg transition-all duration-200 border border-border/50 card-animate">
+            <Card className="p-5 hover:shadow-lg transition-all duration-200 border border-border/50 card-animate ">
                 <div className="text-center">
                     <Avatar className="w-20 h-20 mx-auto mb-4 border-2 border-primary/20">
+                    <AvatarImage src={user.image} />
                         <AvatarFallback className="bg-gradient-to-br from-primary/10 to-secondary/10 text-primary font-medium text-lg">
                             {user.name.split(' ').map(n => n[0]).join('')}
                         </AvatarFallback>
@@ -207,8 +212,6 @@ const DiscoveryPage = () => {
                     <Badge variant="default" className="text-xs px-3 py-1 mb-3">
                         {user.course.replace(/_/g, " ").toLowerCase().replace(/\b\w/g, char => char.toUpperCase())}
                     </Badge>
-
-
 
                     <div className="flex flex-wrap gap-2 justify-center mb-5">
                         {user.hardSkills?.slice(0, 2).map((skill, index) => (
@@ -224,14 +227,11 @@ const DiscoveryPage = () => {
                     </div>
 
                     <div className="space-y-2">
-                        <Button variant="outline" size="sm" className="w-full mobile-button">
+                        <Button variant="outline" size="sm" className="w-full mobile-button" onClick={()=>navigateUser(user.id)}>
                             <Eye className="w-4 h-4 mr-2" />
                             View Profile
                         </Button>
-                        <Button size="sm" className="w-full bg-primary mobile-button">
-                            <MessageCircle className="w-4 h-4 mr-2" />
-                            Connect
-                        </Button>
+                      
                     </div>
                 </div>
             </Card>
@@ -239,8 +239,8 @@ const DiscoveryPage = () => {
     };
 
     return (
-        <div className="h-full overflow-y-auto safe-area-top touch-scroll">
-            <div className="p-6 space-y-6">
+        <div className="h-full overflow-y-auto safe-area-top touch-scroll container mx-auto">
+            <div className="px-18 py-14 space-y-6">
                 {/* Header */}
                 <div className="flex justify-between items-center">
                     <h1 className="text-2xl font-bold text-primary">Discover Students</h1>
@@ -360,7 +360,7 @@ const DiscoveryPage = () => {
                 {/* User Grid/List */}
                 <div className={
                     viewMode === 'grid'
-                        ? 'grid grid-cols-1 sm:grid-cols-2 gap-5'
+                        ? 'grid grid-cols-1 sm:grid-cols-3 gap-5'
                         : 'space-y-4'
                 }>
                     {filteredUsers.map((user) => (

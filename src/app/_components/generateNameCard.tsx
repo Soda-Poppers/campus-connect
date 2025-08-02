@@ -92,9 +92,11 @@ const NamecardModal: React.FC<NamecardModalProps> = ({
     toast.success("Download function coming soon!");
   };
 
+  const baseUrl = "https://campus-connect-nine-zeta.vercel.app";
+
   // Platform-specific sharing functions
   const shareToTelegram = (type: "portrait" | "og") => {
-    const profileUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/profile/${profile.id}/view`;
+    const profileUrl = `${baseUrl}/profile/${profile.id}/view`;
     const message =
       type === "portrait"
         ? `🎓 Check out my CampusConnect profile! Find me, '${profile.name}' on CampusConnect`
@@ -105,7 +107,7 @@ const NamecardModal: React.FC<NamecardModalProps> = ({
   };
 
   const shareToWhatsApp = (type: "portrait" | "og") => {
-    const profileUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/profile/${profile.id}/view`;
+    const profileUrl = `${baseUrl}/profile/${profile.id}/view`;
     const message =
       type === "portrait"
         ? `🎓 Hey! Check out my CampusConnect profile - Find me, '${profile.name}' on CampusConnect\n${profileUrl}`
@@ -116,7 +118,7 @@ const NamecardModal: React.FC<NamecardModalProps> = ({
   };
 
   const shareToDiscord = (type: "portrait" | "og") => {
-    const profileUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/profile/${profile.id}/view`;
+    const profileUrl = `${baseUrl}/profile/${profile.id}/view`;
     const message =
       type === "portrait"
         ? `🎓 Check out my CampusConnect profile! Find me, '${profile.name}' on CampusConnect ${profileUrl}`
@@ -134,7 +136,7 @@ const NamecardModal: React.FC<NamecardModalProps> = ({
   };
 
   const copyLink = (type: "portrait" | "og") => {
-    const profileUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/profile/${profile.id}/view`;
+    const profileUrl = `${baseUrl}/profile/${profile.id}/view`;
     const message =
       type === "portrait"
         ? `Find me, '${profile.name}' on CampusConnect ${profileUrl}`
@@ -152,7 +154,7 @@ const NamecardModal: React.FC<NamecardModalProps> = ({
 
   // Copy link function for portrait tab
   const copyPortraitLink = () => {
-    const profileUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/profile/${profile.id}/view`;
+    const profileUrl = `${baseUrl}/profile/${profile.id}/view`;
 
     navigator.clipboard
       .writeText(profileUrl)

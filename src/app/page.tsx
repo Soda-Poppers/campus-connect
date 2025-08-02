@@ -17,6 +17,9 @@ export default async function Home() {
   if (session?.user) {
     user = await api.user.getUser({ id: session.user.id });
   }
+  if (!user) {
+    redirect("/login"); // or wherever you want to redirect for profile setup
+  }
 
   if (!user) {
     redirect("login");

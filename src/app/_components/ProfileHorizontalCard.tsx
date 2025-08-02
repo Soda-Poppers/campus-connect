@@ -12,8 +12,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Card } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
 import { Course } from "@prisma/client"; // Import the Prisma-generated enum
-import { ChevronDown, ChevronUp, Copy } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
 
 const CourseDisplayNames: Record<Course, string> = {
   [Course.COMPUTER_SCIENCE]: "Computer Science",
@@ -106,6 +104,8 @@ const HorizontalNamecard = ({ user }: Props) => {
     const yearNumber = currentYear - year + 1;
     return `Y${yearNumber}`;
   };
+
+  console.log("user>>>>>>>", user);
 
   return (
     <div className="mx-auto my-5 w-full max-w-md px-4 sm:max-w-lg md:max-w-xl lg:max-w-2xl">
