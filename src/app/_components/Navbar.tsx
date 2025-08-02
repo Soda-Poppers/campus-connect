@@ -86,7 +86,8 @@ import type { Session } from "next-auth";
 import { signIn, signOut } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
-import { Menu, X, User, Home, MessageSquare, LogOut, LogIn } from "lucide-react";
+import { Menu, X, User, Home, MessageSquare, LogOut, LogIn, Compass } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 
 interface NavbarProps {
   session?: Session | null;
@@ -134,7 +135,7 @@ const Navbar: React.FC<NavbarProps> = ({ session }) => {
               className="flex items-center space-x-2 px-4 py-2 rounded-lg text-gray-700 hover:text-[#151b4d] hover:bg-gray-50 transition-all duration-200 group"
             >
               <Home className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
-              <span className="font-medium">Home</span>
+              <span className="font-medium">Forum</span>
             </Link>
 
             {session?.user && (
@@ -201,52 +202,56 @@ const Navbar: React.FC<NavbarProps> = ({ session }) => {
           ? 'max-h-96 opacity-100 pb-4'
           : 'max-h-0 opacity-0 overflow-hidden'
           }`}>
-          <div className="pt-4 space-y-2">
-            <Link
-              href="/"
-              onClick={closeMobileMenu}
-              className="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:text-[#151b4d] hover:bg-gray-50 transition-all duration-200"
-            >
-              <Home className="w-5 h-5" />
-              <span className="font-medium">Home</span>
-            </Link>
+          <div className="pt-4">
 
-            {session?.user && (
-              <Link
-                href="/profile"
-                onClick={closeMobileMenu}
-                className="flex items-center space-x-3 px-4 py-3 rounded-lg text-gray-700 hover:text-[#151b4d] hover:bg-gray-50 transition-all duration-200"
-              >
-                <User className="w-5 h-5" />
-                <span className="font-medium">Profile</span>
-              </Link>
-            )}
-
-            {/* Mobile Auth Section */}
             <div className="">
               {session?.user ? (
-                <div className="space-y-3">
-                  {session.user.image && (
-                    <div className="flex items-center space-x-3 px-4">
-                      <img
-                        src={session.user.image}
-                        alt="Profile"
-                        className="w-10 h-10 rounded-full border-2 border-[#8a704d]/20"
-                      />
-                      <div>
-                        <p className="font-medium text-gray-900">{session.user.name}</p>
-                        <p className="text-sm text-gray-500">{session.user.email}</p>
-                      </div>
+                <div className="">
+                  {/* Discovery Page Link */}
+                  <Link
+                    href="/discovery"
+                    onClick={closeMobileMenu}
+                    className="flex items-center gap-3 px-4 py-3 h-14 text-gray-700 hover:text-[#151b4d] hover:bg-gray-50 transition-all duration-200 border-b border-gray-200"
+                  >
+                    <Compass className="w-5 h-5 text-gray-500" />
+                    <span className="font-medium ml-3">Discovery</span>
+                  </Link>
+
+                  {/* Forum Link */}
+                  <Link
+                    href="/"
+                    onClick={closeMobileMenu}
+                    className="flex items-center gap-3 px-4 py-3 h-14 text-gray-700 hover:text-[#151b4d] hover:bg-gray-50 transition-all duration-200 border-b border-gray-200"
+                  >
+                    <MessageSquare className="w-5 h-5 text-gray-500" />
+                    <span className="font-medium ml-3">Forum</span>
+                  </Link>
+
+                  {/* Profile Link */}
+                  <Link
+                    href="/profile"
+                    onClick={closeMobileMenu}
+                    className="flex items-center gap-3 px-4 py-3 h-16 text-gray-700 hover:text-[#151b4d] hover:bg-gray-50 transition-all duration-200"
+                  >
+                    <Avatar className="h-8 w-8 border-2 border-white">
+                      <AvatarImage src={session?.user.image ?? ""} />
+                      <AvatarFallback className="text-primary bg-white text-sm font-bold">
+                        {session?.user.name?.split(" ").map((n) => n[0]).join("") ?? ""}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div className="flex flex-col">
+                      <p className="font-medium text-gray-700 leading-none">{session?.user.name}</p>
+                      <p className="text-sm text-gray-500 truncate">{session?.user.email}</p>
                     </div>
-                  )}
+                  </Link>
+
                   <button
                     onClick={async () => {
                       await signOut();
                       closeMobileMenu();
                     }}
-                    className="flex items-center space-x-3 w-full px-4 py-3 bg-gradient-to-r from-[#151b4d] to-[#8a704d] text-white rounded-lg hover:shadow-lg transition-all duration-200"
+                    className="flex items-center space-x-3 w-full px-4 py-3 bg-gradient-to-r from-[#151b4d] to-[#8a704d] text-white rounded-lg hover:shadow-lg transition-all duration-200 my-3"
                   >
-
                     <LogOut className="w-5 h-5" />
                     <span className="font-medium">Sign Out</span>
                   </button>
