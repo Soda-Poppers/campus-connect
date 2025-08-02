@@ -20,6 +20,7 @@ import {
 import { api } from '~/trpc/react';
 import { Course } from '@prisma/client';
 import type { Skill } from '~/types/skills';
+import { useRouter } from 'next/navigation';
 
 type Filters = {
     name: string,
@@ -50,7 +51,10 @@ const courseOptions = Object.entries(Course).map(([key, value]) => ({
     label: value.replace(/_/g, " ").toLowerCase().replace(/\b\w/g, char => char.toUpperCase()),
 }));
 
+// Removed the useRouter call here
+
 const DiscoveryPage = () => {
+    const router = useRouter(); // Moved useRouter inside the component
     const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
     const [activeFilters, setActiveFilters] = useState<ModuleFilter[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
@@ -149,6 +153,8 @@ const DiscoveryPage = () => {
         });
     });
 
+
+
     const UserCard = ({ user }: { user: Users }) => {
         if (viewMode === 'list') {
             return (
@@ -183,15 +189,15 @@ const DiscoveryPage = () => {
                                 <Eye className="w-4 h-4 mr-2" />
                                 View
                             </Button>
-                            <Button size="sm" className="bg-primary mobile-button">
-                                <MessageCircle className="w-4 h-4 mr-2" />
-                                Connect
-                            </Button>
                         </div>
                     </div>
                 </Card>
             );
         }
+
+        const navigateUser = (userId: string) => {
+            router.push(`/profile/${userId}/view`);
+        };
 
         return (
             <Card className="p-5 hover:shadow-lg transition-all duration-200 border border-border/50 card-animate">
@@ -224,14 +230,11 @@ const DiscoveryPage = () => {
                     </div>
 
                     <div className="space-y-2">
-                        <Button variant="outline" size="sm" className="w-full mobile-button">
+                        <Button variant="outline" size="sm" className="w-full mobile-button" onClick={()=>navigateUser(user.id)}>
                             <Eye className="w-4 h-4 mr-2" />
                             View Profile
                         </Button>
-                        <Button size="sm" className="w-full bg-primary mobile-button">
-                            <MessageCircle className="w-4 h-4 mr-2" />
-                            Connect
-                        </Button>
+                      
                     </div>
                 </div>
             </Card>
