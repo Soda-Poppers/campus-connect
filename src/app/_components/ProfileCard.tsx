@@ -85,7 +85,6 @@ const PortraitNamecard = ({ user }: Props) => {
   const projects = parseJsonField(user.project ?? []);
 
   const getAcademicYearLabel = (enrollmentYear?: number | string) => {
-    console.log("enrollmentYear>>", enrollmentYear);
     if (!enrollmentYear) return "";
     const year =
       typeof enrollmentYear === "string"
@@ -105,7 +104,7 @@ const PortraitNamecard = ({ user }: Props) => {
   };
 
   return (
-    <Card className="mx-auto w-full max-w-xs overflow-hidden bg-white shadow-md transition-all duration-300">
+    <Card className="mx-auto w-full max-w-xs overflow-hidden bg-white p-0 shadow-md transition-all duration-300">
       {/* Header with gradient */}
       <div className="from-primary to-secondary bg-gradient-to-r p-6 text-center text-white">
         {user.image && (

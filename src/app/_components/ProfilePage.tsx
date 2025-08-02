@@ -92,6 +92,25 @@ const ProfilePage = () => {
   const { data: userData } = api.user.getCurrentUser.useQuery();
   const { data: userModules } = api.module.getUserModules.useQuery();
 
+  const getAcademicYearLabel = (enrollmentYear?: number | string) => {
+    if (!enrollmentYear) return "";
+    const year =
+      typeof enrollmentYear === "string"
+        ? parseInt(enrollmentYear, 10)
+        : enrollmentYear;
+    if (isNaN(year)) return "";
+    const currentYear = new Date().getFullYear();
+
+    if (year > currentYear) {
+      return `Pre-graduate (${year})`;
+    }
+    if (currentYear - year >= 6) {
+      return `Alumni (${year})`;
+    }
+    const yearNumber = currentYear - year + 1;
+    return `Y${yearNumber}`;
+  };
+
   useEffect(() => {
     if (userData) {
       console.log(userData);
@@ -238,7 +257,7 @@ const ProfilePage = () => {
         </div>
 
         {/* Profile Card - Singpass Style */}
-        <Card className="border-primary/20 overflow-hidden border-2">
+        <Card className="border-primary/20 overflow-hidden border-2 p-0">
           {/* Header Section with Background */}
           <div className="from-primary to-secondary relative bg-gradient-to-r p-6 text-white">
             <div className="flex items-start space-x-4">
