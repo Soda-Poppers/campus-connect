@@ -109,37 +109,37 @@ const NamecardModal: React.FC<NamecardModalProps> = ({
   }, [profile]);
 
   const PortraitNamecard: React.FC = () => (
-    <Card className="from-primary/5 to-secondary/5 border-primary/20 mx-auto w-full max-w-xs overflow-hidden border-2  bg-gradient-to-br">
+    <Card className="from-primary/5 to-secondary/5 border-primary/20 mx-auto w-full max-w-xs overflow-hidden border-2 bg-gradient-to-br">
       {/* Header with gradient */}
-      <div className="from-primary to-secondary bg-gradient-to-r p-6 text-center text-white">
-        <Avatar className="mx-auto mb-4 h-20 w-20 border-4 border-white">
+      <div className="from-primary to-secondary bg-gradient-to-r p-4 text-center text-white">
+        <Avatar className="mx-auto mb-3 h-16 w-16 border-4 border-white">
           <AvatarImage src={profile.image} />
-          <AvatarFallback className="text-primary bg-white text-xl font-bold">
+          <AvatarFallback className="text-primary bg-white text-lg font-bold">
             {profile.name
               .split(" ")
               .map((n) => n[0])
               .join("")}
           </AvatarFallback>
         </Avatar>
-        <h2 className="text-lg font-bold">{profile.name}</h2>
-        <p className="text-sm text-white/90">
+        <h2 className="text-base font-bold">{profile.name}</h2>
+        <p className="text-xs text-white/90">
           {profile.enrollmentYear} •{" "}
           {profile.course
             .replace(/_/g, " ")
             .toLowerCase()
             .replace(/\b\w/g, (char) => char.toUpperCase())}
         </p>
-        <p className="mt-1 text-sm text-white/80">
+        <p className="mt-1 text-xs text-white/80">
           {profile.socialMedia?.find((s) => s.platform === "telegram")
             ?.username ?? ""}
         </p>
       </div>
 
       {/* Content */}
-      <div className="space-y-4 p-6">
+      <div className="space-y-3 p-4">
         {/* Skills */}
         <div>
-          <h3 className="text-primary mb-2 text-sm font-medium">Skills</h3>
+          <h3 className="text-primary mb-2 text-xs font-medium">Skills</h3>
           <div className="flex flex-wrap gap-1">
             {[
               ...(profile.softSkills ?? []).slice(0, 3),
@@ -163,11 +163,11 @@ const NamecardModal: React.FC<NamecardModalProps> = ({
         {/* Modules */}
         {modules.length > 0 && (
           <div>
-            <h3 className="text-primary mb-2 text-sm font-medium">
+            <h3 className="text-primary mb-2 text-xs font-medium">
               Current Modules
             </h3>
             <div className="space-y-1">
-              {modules.slice(0, 3).map((module, index) => (
+              {modules.slice(0, 2).map((module, index) => (
                 <div key={index} className="text-muted-foreground text-xs">
                   {module.classId} - {module.name}
                 </div>
@@ -179,7 +179,7 @@ const NamecardModal: React.FC<NamecardModalProps> = ({
         {/* Interests */}
         {profile.interest && profile.interest.length > 0 && (
           <div>
-            <h3 className="text-primary mb-2 text-sm font-medium">Interests</h3>
+            <h3 className="text-primary mb-2 text-xs font-medium">Interests</h3>
             <div className="flex flex-wrap gap-1">
               {profile.interest
                 .slice(0, 3)
@@ -194,7 +194,7 @@ const NamecardModal: React.FC<NamecardModalProps> = ({
       </div>
 
       {/* Footer */}
-      <div className="border-border/50 border-t p-3 text-center">
+      <div className="border-border/50 border-t p-2 text-center">
         <p className="text-muted-foreground text-xs">
           Created by CampusConnect
         </p>
@@ -204,12 +204,12 @@ const NamecardModal: React.FC<NamecardModalProps> = ({
 
   const OGCard = () => (
     <Card className="from-primary/5 to-secondary/5 border-primary/20 w-full overflow-hidden border-2 bg-gradient-to-r">
-      <div className="flex items-center space-x-6 p-6">
+      <div className="flex items-center space-x-4 p-4">
         {/* Profile Info */}
-        <div className="flex flex-1 items-center space-x-4">
-          <Avatar className="border-primary/20 h-16 w-16 border-3">
+        <div className="flex flex-1 items-center space-x-3">
+          <Avatar className="border-primary/20 h-12 w-12 border-2">
             <AvatarImage src={profile.image} />
-            <AvatarFallback className="bg-primary/10 text-primary font-bold">
+            <AvatarFallback className="bg-primary/10 text-primary font-bold text-sm">
               {profile.name
                 .split(" ")
                 .map((n) => n[0])
@@ -217,18 +217,18 @@ const NamecardModal: React.FC<NamecardModalProps> = ({
             </AvatarFallback>
           </Avatar>
 
-          <div className="flex-1">
-            <h2 className="text-primary font-bold">{profile.name}</h2>
-            <p className="text-muted-foreground text-sm">
+          <div className="flex-1 min-w-0">
+            <h2 className="text-primary font-bold text-sm">{profile.name}</h2>
+            <p className="text-muted-foreground text-xs">
               {profile.enrollmentYear} • {profile.course}
             </p>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-muted-foreground text-xs">
               {profile.socialMedia?.find((s) => s.platform === "telegram")
                 ?.username ?? ""}
             </p>
 
             {/* Selected Skills for OG Card */}
-            <div className="mt-2 flex flex-wrap gap-1">
+            <div className="mt-1 flex flex-wrap gap-1">
               {(selectedSkills.length > 0
                 ? selectedSkills
                 : allSkills.slice(0, 3)
@@ -250,9 +250,9 @@ const NamecardModal: React.FC<NamecardModalProps> = ({
         </div>
 
         {/* CampusConnect Logo/Branding */}
-        <div className="text-right">
-          <div className="bg-primary mb-2 flex h-12 w-12 items-center justify-center rounded-lg">
-            <span className="text-primary-foreground text-sm font-bold">
+        <div className="text-right flex-shrink-0">
+          <div className="bg-primary mb-1 flex h-8 w-8 items-center justify-center rounded-lg">
+            <span className="text-primary-foreground text-xs font-bold">
               CC
             </span>
           </div>
@@ -264,10 +264,10 @@ const NamecardModal: React.FC<NamecardModalProps> = ({
 
   return (
     <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="mx-auto flex h-[90vh] max-w-md flex-col bg-slate-900 p-0">
-        <DialogHeader className="border-b p-4">
+      <DialogContent className="mx-auto flex h-[85vh] max-h-[600px] max-w-md flex-col p-0">
+        <DialogHeader className="border-b p-3 flex-shrink-0">
           <div className="flex items-center justify-between">
-            <DialogTitle>Generate Namecard</DialogTitle>
+            <DialogTitle className="text-base">Generate Namecard</DialogTitle>
             <Button variant="ghost" size="sm" onClick={onClose}>
               <X className="h-4 w-4" />
             </Button>
@@ -278,28 +278,28 @@ const NamecardModal: React.FC<NamecardModalProps> = ({
           </DialogDescription>
         </DialogHeader>
 
-        <Tabs defaultValue="portrait" className="flex flex-1 flex-col">
-          <TabsList className="mx-4 mt-4 grid w-full grid-cols-2">
+        <Tabs defaultValue="portrait" className="flex flex-1 flex-col min-h-0">
+          <TabsList className="mx-3 mt-3 grid w-auto grid-cols-2 flex-shrink-0">
             <TabsTrigger
               value="portrait"
-              className="flex items-center space-x-2"
+              className="flex items-center space-x-2 text-xs"
             >
-              <CreditCard className="h-4 w-4" />
+              <CreditCard className="h-3 w-3" />
               <span>Portrait</span>
             </TabsTrigger>
-            <TabsTrigger value="og" className="flex items-center space-x-2">
-              <ImageIcon className="h-4 w-4" />
+            <TabsTrigger value="og" className="flex items-center space-x-2 text-xs">
+              <ImageIcon className="h-3 w-3" />
               <span>Social Card</span>
             </TabsTrigger>
           </TabsList>
 
-          <div className="flex-1 overflow-y-auto p-4">
-            <TabsContent value="portrait" className="space-y-4">
+          <div className="flex-1 overflow-y-auto p-3 min-h-0">
+            <TabsContent value="portrait" className="space-y-3 mt-0">
               <div className="text-center">
-                <h3 className="text-primary mb-2 font-medium">
+                <h3 className="text-primary mb-1 font-medium text-sm">
                   Portrait Namecard
                 </h3>
-                <p className="text-muted-foreground mb-4 text-sm">
+                <p className="text-muted-foreground mb-3 text-xs">
                   Perfect for saving and sharing your complete profile
                 </p>
               </div>
@@ -308,41 +308,41 @@ const NamecardModal: React.FC<NamecardModalProps> = ({
                 <PortraitNamecard />
               </div>
 
-              <div className="flex space-x-3">
+              <div className="flex space-x-2 pt-2">
                 <Button
                   variant="outline"
                   onClick={() => handleDownload("portrait")}
-                  className="flex-1"
+                  className="flex-1 text-xs h-8"
                 >
-                  <Download className="mr-2 h-4 w-4" />
+                  <Download className="mr-1 h-3 w-3" />
                   Download
                 </Button>
                 <Button
                   onClick={() => handleShare("portrait")}
-                  className="bg-primary flex-1"
+                  className="bg-primary flex-1 text-xs h-8"
                 >
-                  <Share className="mr-2 h-4 w-4" />
+                  <Share className="mr-1 h-3 w-3" />
                   Share
                 </Button>
               </div>
             </TabsContent>
 
-            <TabsContent value="og" className="space-y-4">
+            <TabsContent value="og" className="space-y-3 mt-0">
               <div className="text-center">
-                <h3 className="text-primary mb-2 font-medium">
+                <h3 className="text-primary mb-1 font-medium text-sm">
                   Social Sharing Card
                 </h3>
-                <p className="text-muted-foreground mb-4 text-sm">
+                <p className="text-muted-foreground mb-3 text-xs">
                   Optimized for Telegram and social media sharing
                 </p>
               </div>
 
               {/* Skill Selection for OG Card */}
               <div>
-                <h4 className="text-primary mb-2 text-sm font-medium">
+                <h4 className="text-primary mb-2 text-xs font-medium">
                   Select 3 skills to highlight ({selectedSkills.length}/3)
                 </h4>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-1 max-h-20 overflow-y-auto">
                   {allSkills.map((skill, index) => {
                     const isSelected = selectedSkills.some(
                       (selectedSkill) =>
@@ -354,7 +354,7 @@ const NamecardModal: React.FC<NamecardModalProps> = ({
                         variant={isSelected ? "default" : "outline"}
                         size="sm"
                         onClick={() => toggleSkillSelection(skill)}
-                        className="text-xs"
+                        className="text-xs h-6 px-2"
                         disabled={!isSelected && selectedSkills.length >= 3}
                       >
                         {skill.skillName}
@@ -368,20 +368,20 @@ const NamecardModal: React.FC<NamecardModalProps> = ({
                 <OGCard />
               </div>
 
-              <div className="flex space-x-3">
+              <div className="flex space-x-2 pt-2">
                 <Button
                   variant="outline"
                   onClick={() => handleDownload("og")}
-                  className="flex-1"
+                  className="flex-1 text-xs h-8"
                 >
-                  <Download className="mr-2 h-4 w-4" />
+                  <Download className="mr-1 h-3 w-3" />
                   Download
                 </Button>
                 <Button
                   onClick={() => handleShare("og")}
-                  className="bg-primary flex-1"
+                  className="bg-primary flex-1 text-xs h-8"
                 >
-                  <Share className="mr-2 h-4 w-4" />
+                  <Share className="mr-1 h-3 w-3" />
                   Share
                 </Button>
               </div>
