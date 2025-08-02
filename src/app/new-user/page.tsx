@@ -451,11 +451,10 @@ const ProfileWelcomeFlow: React.FC = () => {
                 key={key}
                 type="button"
                 onClick={() => updateFormField("course", value)}
-                className={`w-full rounded-xl border-2 p-4 text-left transition-all ${
-                  formData.course === value
-                    ? "border-primary  bg-primary text-white"
-                    : "border-gray-200 hover:border-gray-300"
-                }`}
+                className={`w-full rounded-xl border-2 p-4 text-left transition-all ${formData.course === value
+                  ? "border-primary  bg-primary text-white"
+                  : "border-gray-200 hover:border-gray-300"
+                  }`}
               >
                 {CourseDisplayNames[value]}
               </button>
@@ -659,39 +658,94 @@ const ProfileWelcomeFlow: React.FC = () => {
       case "interests":
         return (
           <div className="space-y-4">
-            <textarea
-              placeholder="Tell us about your projects, achievements, or work experience..."
-              value={formData.project}
-              onChange={(e) => updateFormField("project", e.target.value)}
-              className="w-full resize-none rounded-xl border-2 border-gray-200 px-4 py-3 text-lg transition-colors focus:border-blue-500 focus:outline-none"
-              rows={4}
-              autoFocus
+            <SkillInput
+              label="Interests"
+              skills={formData.interests}
+              onChange={(skills) => updateFormField("interests", skills)}
+              placeholder="Type an interest and press Enter"
             />
-            <p className="text-sm text-gray-500">
-              This section is optional - you can skip it and fill it later.
-            </p>
           </div>
         );
 
       case "socialMedia":
         return (
-          <div className="space-y-4">
-            <textarea
-              placeholder="What are your hobbies, interests, or passions?"
-              value={formData.interests}
-              onChange={(e) => updateFormField("interests", e.target.value)}
-              className="w-full resize-none rounded-xl border-2 border-gray-200 px-4 py-3 text-lg transition-colors focus:border-blue-500 focus:outline-none"
-              rows={4}
-              autoFocus
-            />
-            <p className="text-sm text-gray-500">
-              This section is optional - you can skip it and fill it later.
-            </p>
+          <div className="space-y-1">
+            <label className="block text-sm font-medium">Social Media (optional)</label>
+            <div className="space-y-2">
+              <div className="space-y-3">
+
+                <div>
+                  <Label htmlFor="edit-telegram">Telegram</Label>
+                  <Input
+                    id="edit-telegram"
+                    value={formData.socialMedia.find(social => social.platform === 'telegram')?.username || ''}
+                    onChange={(e) => {
+                      const updatedSocialMedia = formData.socialMedia.filter(social => social.platform !== 'telegram');
+                      updateFormField('socialMedia', [
+                        ...updatedSocialMedia,
+                        { platform: 'telegram', username: e.target.value }
+                      ]);
+                    }}
+                    placeholder="@username"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="edit-instagram">Instagram</Label>
+                  <Input
+                    id="edit-instagram"
+                    value={formData.socialMedia.find(social => social.platform === 'instagram')?.username || ''}
+                    onChange={(e) => {
+                      const updatedSocialMedia = formData.socialMedia.filter(social => social.platform !== 'instagram');
+                      updateFormField('socialMedia', [
+                        ...updatedSocialMedia,
+                        { platform: 'instagram', username: e.target.value }
+                      ]);
+                    }}
+                    placeholder="@username"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="edit-linkedin">LinkedIn</Label>
+                  <Input
+                    id="edit-linkedin"
+                    value={formData.socialMedia.find(social => social.platform === 'linkedin')?.username || ''}
+                    onChange={(e) => {
+                      const updatedSocialMedia = formData.socialMedia.filter(social => social.platform !== 'linkedin');
+                      updateFormField('socialMedia', [
+                        ...updatedSocialMedia,
+                        { platform: 'linkedin', username: e.target.value }
+                      ]);
+                    }}
+                    placeholder="linkedin.com/in/username"
+                  />
+                </div>
+
+                <div>
+                  <Label htmlFor="edit-email">Email</Label>
+                  <Input
+                    id="edit-email"
+                    value={formData.socialMedia.find(social => social.platform === 'email')?.username || ''}
+                    onChange={(e) => {
+                      const updatedSocialMedia = formData.socialMedia.filter(social => social.platform !== 'email');
+                      updateFormField('socialMedia', [
+                        ...updatedSocialMedia,
+                        { platform: 'email', username: e.target.value }
+                      ]);
+                    }}
+                    placeholder="your.email@smu.edu.sg"
+                  />
+                </div>
+              </div>
+
+            </div>
           </div>
-        );
+        )
 
       default:
         return <div>Invalid step</div>;
+
     }
   };
 
