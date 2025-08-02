@@ -168,7 +168,7 @@ const QRCodeModal: React.FC<QRCodeModalProps> = ({
               />
             </div>
             <p className="text-sm text-gray-600">
-              Scan this QR code to view {userName}'s profile
+              Scan this QR code to view {userName}&apos;s profile
             </p>
           </Card>
 
