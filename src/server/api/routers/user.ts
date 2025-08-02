@@ -178,6 +178,7 @@ export const userRouter = createTRPCRouter({
   create: publicProcedure
     .input(z.object({
       name: z.string().min(1).optional(),
+      intro: z.string().optional(),
       enrollmentYear: z.number().int().min(1900).max(2030).optional(),
       course: z.nativeEnum(Course).optional(),
       modules: z.array(z.object({
@@ -206,6 +207,7 @@ export const userRouter = createTRPCRouter({
       const data: any = {};
 
       if (input.name !== undefined && input.name !== "") data.name = input.name;
+      if (input.intro !== undefined && input.intro !== "") data.intro = input.intro;
       if (input.enrollmentYear !== undefined) data.enrollmentYear = input.enrollmentYear;
       if (input.course !== undefined) data.course = input.course;
       if (input.project !== undefined) {

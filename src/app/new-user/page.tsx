@@ -49,6 +49,7 @@ interface NewModuleForm {
 
 interface FormData {
   name: string;
+  intro:string;
   enrollmentYear: string;
   course: string;
   modules: Module[];
@@ -102,6 +103,7 @@ const ProfileWelcomeFlow: React.FC = () => {
   // Form data
   const [formData, setFormData] = useState<FormData>({
     name: "",
+    intro: "",
     enrollmentYear: "",
     course: "",
     modules: [],
@@ -140,6 +142,12 @@ const ProfileWelcomeFlow: React.FC = () => {
       title: "When did you enroll?",
       icon: GraduationCap,
       required: true,
+    },
+    {
+      id: "intro",
+      title: "Introduce yourself!",
+      icon: User,
+      required: false,
     },
     {
       id: "course",
@@ -274,6 +282,7 @@ const ProfileWelcomeFlow: React.FC = () => {
       console.log(formData);
       await createUserMutation.mutateAsync({
         name: formData.name,
+        intro: formData.intro,
         enrollmentYear: parseInt(formData.enrollmentYear),
         course: formData.course as Course,
         modules: formData.modules, // Send the full module objects instead of just IDs
@@ -384,6 +393,23 @@ const ProfileWelcomeFlow: React.FC = () => {
             />
           </div>
         );
+
+      case "intro":
+        return(
+          <div className="space-y-4">
+            <label className="block text-sm font-medium">
+              Introduction (optional)
+            </label>
+            <input
+              type="text"
+              placeholder="Enter your introduction"
+              value={formData.intro}
+              onChange={(e) => updateFormField("intro", e.target.value)}
+              className="focus:border-primary w-full rounded-xl border-2 border-gray-200 px-4 py-3 text-lg transition-colors focus:outline-none"
+              autoFocus
+            />
+          </div>
+        )
 
       case "enrollmentYear":
         return (
