@@ -12,7 +12,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import { Card } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
 import { Course } from "@prisma/client"; // Import the Prisma-generated enum
-import { ChevronDown, ChevronUp } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronUp,
+  Instagram,
+  Linkedin,
+  Mail,
+  MessageCircle,
+} from "lucide-react";
 
 const CourseDisplayNames: Record<Course, string> = {
   [Course.COMPUTER_SCIENCE]: "Computer Science",
@@ -47,6 +54,8 @@ import type {
   Modules,
   ModulesOnUsers as PrismaModulesOnUsers,
 } from "@prisma/client";
+import { Button } from "~/components/ui/button";
+import type { profile } from "console";
 
 // Updated UserData type to match your Prisma schema and tRPC return
 type UserData = User & {
@@ -103,8 +112,57 @@ const PortraitNamecard = ({ user }: Props) => {
     return `Y${yearNumber}`;
   };
 
+  const getSocialIcon = (platform: string) => {
+    switch (platform) {
+      case "telegram":
+        return <MessageCircle className="h-4 w-4" />;
+      case "instagram":
+        return <Instagram className="h-4 w-4" />;
+      case "linkedin":
+        return <Linkedin className="h-4 w-4" />;
+      case "email":
+        return <Mail className="h-4 w-4" />;
+      default:
+        return <Mail className="h-4 w-4" />;
+    }
+  };
+
+  const handleSocialMediaClick = (social: SocialMedia) => {
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? window.location.origin;
+    const profileUrl = `${baseUrl}/profile/${user.id}/view`;
+    const message = `Find me, '${user.name}' on CampusConnect ${profileUrl}`;
+
+    let url = "";
+
+    switch (social.platform.toLowerCase()) {
+      case "telegram":
+        // For Telegram, we can open a chat with the user and pre-fill a message
+        url = `https://t.me/${social.username.replace("@", "")}?text=${encodeURIComponent(message)}`;
+        break;
+      case "instagram":
+        // Instagram doesn't support pre-filled messages, so just open the profile
+        url = `https://instagram.com/${social.username.replace("@", "")}`;
+        break;
+      case "linkedin":
+        // LinkedIn messaging with pre-filled text (this opens LinkedIn messaging if logged in)
+        url = `https://www.linkedin.com/messaging/compose?recipient=${social.username}&body=${encodeURIComponent(message)}`;
+        break;
+      case "email":
+        // Email with subject and body
+        url = `mailto:${social.username}?subject=${encodeURIComponent(`Connect on CampusConnect`)}&body=${encodeURIComponent(message)}`;
+        break;
+      default:
+        console.log(`Opening ${social.platform}: ${social.username}`);
+        return;
+    }
+
+    if (url) {
+      window.open(url, "_blank");
+    }
+  };
+
   return (
-    <Card className="mx-auto w-full max-w-xs overflow-hidden bg-white p-0 shadow-md transition-all duration-300">
+    <Card className="mx-auto w-full max-w-md min-w-xs overflow-hidden bg-white p-0 shadow-md transition-all duration-300">
       {/* Header with gradient */}
       <div className="from-primary to-secondary bg-gradient-to-r p-6 text-center text-white">
         {user.image && (
@@ -265,17 +323,29 @@ const PortraitNamecard = ({ user }: Props) => {
             {/* Social Media */}
             {socialMediaData.length > 0 && (
               <div>
-                <h3 className="text-primary mb-2 text-sm font-medium">
-                  Social Media
-                </h3>
-                <div className="space-y-1">
-                  {socialMediaData.map((social: any, index: number) => (
-                    <div key={index} className="text-muted-foreground text-xs">
-                      <span className="font-medium capitalize">
-                        {social.platform}:
-                      </span>{" "}
-                      {social.username}
-                    </div>
+                <h3 className="text-primary mb-3 font-medium">Connect</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  {socialMediaData.map((social, index) => (
+                    <Button
+                      key={index}
+                      variant="outline"
+                      className="h-auto justify-start p-3"
+                      onClick={() => handleSocialMediaClick(social)}
+                    >
+                      <div className="flex w-full items-center space-x-3">
+                        <div className="bg-primary/10 flex h-8 w-8 items-center justify-center rounded-full">
+                          {getSocialIcon(social.platform)}
+                        </div>
+                        <div className="min-w-0 flex-1 text-left">
+                          <div className="text-muted-foreground text-xs capitalize">
+                            {social.platform}
+                          </div>
+                          <div className="truncate text-sm font-medium">
+                            {social.username}
+                          </div>
+                        </div>
+                      </div>
+                    </Button>
                   ))}
                 </div>
               </div>

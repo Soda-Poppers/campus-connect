@@ -179,6 +179,40 @@ const ProfilePage = () => {
     }
   };
 
+  const handleSocialMediaClick = (social: SocialMedia) => {
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? window.location.origin;
+    const profileUrl = `${baseUrl}/profile/${profile.id}/view`;
+    const message = `Find me, '${profile.name}' on CampusConnect ${profileUrl}`;
+
+    let url = "";
+
+    switch (social.platform.toLowerCase()) {
+      case "telegram":
+        // For Telegram, we can open a chat with the user and pre-fill a message
+        url = `https://t.me/${social.username.replace("@", "")}?text=${encodeURIComponent(message)}`;
+        break;
+      case "instagram":
+        // Instagram doesn't support pre-filled messages, so just open the profile
+        url = `https://instagram.com/${social.username.replace("@", "")}`;
+        break;
+      case "linkedin":
+        // LinkedIn messaging with pre-filled text (this opens LinkedIn messaging if logged in)
+        url = `https://www.linkedin.com/messaging/compose?recipient=${social.username}&body=${encodeURIComponent(message)}`;
+        break;
+      case "email":
+        // Email with subject and body
+        url = `mailto:${social.username}?subject=${encodeURIComponent(`Connect on CampusConnect`)}&body=${encodeURIComponent(message)}`;
+        break;
+      default:
+        console.log(`Opening ${social.platform}: ${social.username}`);
+        return;
+    }
+
+    if (url) {
+      window.open(url, "_blank");
+    }
+  };
+
   const { mutate: editUser } = api.user.editUser.useMutation({
     onSuccess: () => {
       toast.success("Profile updated!");
@@ -410,12 +444,7 @@ const ProfilePage = () => {
                     key={index}
                     variant="outline"
                     className="h-auto justify-start p-3"
-                    onClick={() => {
-                      // Handle social media link opening
-                      console.log(
-                        `Opening ${social.platform}: ${social.username}`,
-                      );
-                    }}
+                    onClick={() => handleSocialMediaClick(social)}
                   >
                     <div className="flex w-full items-center space-x-3">
                       <div className="bg-primary/10 flex h-8 w-8 items-center justify-center rounded-full">
