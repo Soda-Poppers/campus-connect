@@ -81,7 +81,7 @@ const PortraitNamecard = ({ user }: Props) => {
   const softSkills = parseJsonField(user.softSkills);
   const hardSkills = parseJsonField(user.hardSkills);
   const socialMediaData = parseJsonField(user.socialMedia);
-  const interests = user.interest as InterestType[];
+  const interests = user.interest as unknown as InterestType[];
   const projects = parseJsonField(user.project ?? []);
 
   const getAcademicYearLabel = (enrollmentYear?: number | string) => {
