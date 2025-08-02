@@ -20,12 +20,18 @@ import {
   Heart,
   Send,
   Icon,
+  Mail,
   Check,
 } from "lucide-react";
 import { api } from "~/trpc/react";
 import Link from "next/link";
 import SkillInput from "../_components/WelcomeFlow/SkillInput";
 import type { Skill } from "~/types/skills";
+import type { SocialMedia } from "~/types/socialMedia";
+import { Label } from "~/components/ui/label";
+import { Input } from "~/components/ui/input";
+// import SocialMediaInput from "../_components/WelcomeFlow/SocialMediaInput";
+
 
 // Types based on your Prisma schema
 interface Module {
@@ -48,9 +54,10 @@ interface FormData {
   course: string;
   modules: Module[];
   project: string;
-  interests: string;
+  interests: Skill[];
   hardSkills: Skill[];
   softSkills: Skill[];
+  socialMedia: SocialMedia[]
 }
 
 interface Step {
@@ -100,9 +107,10 @@ const ProfileWelcomeFlow: React.FC = () => {
     course: "",
     modules: [],
     project: "",
-    interests: "",
+    interests: [],
     hardSkills: [],
     softSkills: [],
+    socialMedia: []
   });
 
   // Module search state
@@ -118,6 +126,8 @@ const ProfileWelcomeFlow: React.FC = () => {
     prof: "",
     classId: "",
   });
+
+  const platforms = ['telegram', 'instagram', 'linkedin', 'email']
 
   const steps: Step[] = [
     {
@@ -157,15 +167,15 @@ const ProfileWelcomeFlow: React.FC = () => {
       required: false,
     },
     {
-      id: "project",
-      title: "Tell us about your projects",
-      icon: Briefcase,
-      required: false,
-    },
-    {
       id: "interests",
       title: "What are your interests?",
       icon: Heart,
+      required: false,
+    },
+    {
+      id: "socialMedia",
+      title: "How can others contact you?",
+      icon: Mail,
       required: false,
     },
   ];
@@ -262,6 +272,7 @@ const ProfileWelcomeFlow: React.FC = () => {
     setIsSubmitting(true);
 
     try {
+      console.log(formData)
       await createUserMutation.mutateAsync({
         name: formData.name,
         enrollmentYear: parseInt(formData.enrollmentYear),
@@ -269,8 +280,9 @@ const ProfileWelcomeFlow: React.FC = () => {
         modules: formData.modules, // Send the full module objects instead of just IDs
         project: formData.project || undefined,
         interests: formData.interests || undefined,
-        hardSkills: formData.hardSkills || {},
-        softSkills: formData.softSkills || {},
+        hardSkills: formData.hardSkills || [],
+        softSkills: formData.softSkills || [],
+        socialMedia: formData.socialMedia || []
       });
 
       setIsCompleted(true);
@@ -439,11 +451,10 @@ const ProfileWelcomeFlow: React.FC = () => {
                 key={key}
                 type="button"
                 onClick={() => updateFormField("course", value)}
-                className={`w-full rounded-xl border-2 p-4 text-left transition-all ${
-                  formData.course === value
-                    ? "border-blue-500 bg-blue-50 text-blue-700"
-                    : "border-gray-200 hover:border-gray-300"
-                }`}
+                className={`w-full rounded-xl border-2 p-4 text-left transition-all ${formData.course === value
+                  ? "border-blue-500 bg-blue-50 text-blue-700"
+                  : "border-gray-200 hover:border-gray-300"
+                  }`}
               >
                 {CourseDisplayNames[value]}
               </button>
@@ -509,39 +520,39 @@ const ProfileWelcomeFlow: React.FC = () => {
                 {/* Search results */}
                 {(moduleResults.length > 0 ||
                   (moduleSearch.length > 0 && !isSearching)) && (
-                  <div className="absolute top-full right-0 left-0 z-10 mt-2 max-h-60 overflow-y-auto rounded-xl border-2 border-gray-200 bg-white shadow-lg">
-                    {moduleResults.map((module) => (
-                      <button
-                        key={module.id}
-                        type="button"
-                        onClick={() => addModule(module)}
-                        className="w-full border-b border-gray-100 p-3 text-left last:border-b-0 hover:bg-gray-50"
-                      >
-                        <div className="font-medium">{module.name}</div>
-                        <div className="text-sm text-gray-600">
-                          {module.classId} • {module.prof}
-                        </div>
-                      </button>
-                    ))}
-
-                    {moduleResults.length === 0 &&
-                      moduleSearch.length > 0 &&
-                      !isSearching && (
+                    <div className="absolute top-full right-0 left-0 z-10 mt-2 max-h-60 overflow-y-auto rounded-xl border-2 border-gray-200 bg-white shadow-lg">
+                      {moduleResults.map((module) => (
                         <button
+                          key={module.id}
                           type="button"
-                          onClick={showCreateNewModuleForm}
-                          className="w-full border-b border-gray-100 p-3 text-left hover:bg-gray-50"
+                          onClick={() => addModule(module)}
+                          className="w-full border-b border-gray-100 p-3 text-left last:border-b-0 hover:bg-gray-50"
                         >
-                          <div className="flex items-center gap-2">
-                            <Plus className="h-4 w-4" />
-                            <span>
-                              Create new module: &quot;{moduleSearch}&quot;
-                            </span>
+                          <div className="font-medium">{module.name}</div>
+                          <div className="text-sm text-gray-600">
+                            {module.classId} • {module.prof}
                           </div>
                         </button>
-                      )}
-                  </div>
-                )}
+                      ))}
+
+                      {moduleResults.length === 0 &&
+                        moduleSearch.length > 0 &&
+                        !isSearching && (
+                          <button
+                            type="button"
+                            onClick={showCreateNewModuleForm}
+                            className="w-full border-b border-gray-100 p-3 text-left hover:bg-gray-50"
+                          >
+                            <div className="flex items-center gap-2">
+                              <Plus className="h-4 w-4" />
+                              <span>
+                                Create new module: &quot;{moduleSearch}&quot;
+                              </span>
+                            </div>
+                          </button>
+                        )}
+                    </div>
+                  )}
               </div>
             )}
 
@@ -643,39 +654,94 @@ const ProfileWelcomeFlow: React.FC = () => {
             onChange={(skills) => updateFormField("softSkills", skills)}
           />
         );
-      case "project":
-        return (
-          <div className="space-y-4">
-            <textarea
-              placeholder="Tell us about your projects, achievements, or work experience..."
-              value={formData.project}
-              onChange={(e) => updateFormField("project", e.target.value)}
-              className="w-full resize-none rounded-xl border-2 border-gray-200 px-4 py-3 text-lg transition-colors focus:border-blue-500 focus:outline-none"
-              rows={4}
-              autoFocus
-            />
-            <p className="text-sm text-gray-500">
-              This section is optional - you can skip it and fill it later.
-            </p>
-          </div>
-        );
 
       case "interests":
         return (
           <div className="space-y-4">
-            <textarea
-              placeholder="What are your hobbies, interests, or passions?"
-              value={formData.interests}
-              onChange={(e) => updateFormField("interests", e.target.value)}
-              className="w-full resize-none rounded-xl border-2 border-gray-200 px-4 py-3 text-lg transition-colors focus:border-blue-500 focus:outline-none"
-              rows={4}
-              autoFocus
+            <SkillInput
+              label="Interests"
+              skills={formData.interests}
+              onChange={(skills) => updateFormField("interests", skills)}
+              placeholder="Type an interest and press Enter"
             />
-            <p className="text-sm text-gray-500">
-              This section is optional - you can skip it and fill it later.
-            </p>
           </div>
         );
+
+      case "socialMedia":
+        return (
+          <div className="space-y-1">
+            <label className="block text-sm font-medium">Social Media (optional)</label>
+            <div className="space-y-2">
+              <div className="space-y-3">
+
+                <div>
+                  <Label htmlFor="edit-telegram">Telegram</Label>
+                    <Input
+                    id="edit-telegram"
+                    value={formData.socialMedia.find(social => social.platform === 'telegram')?.username || ''}
+                    onChange={(e) => {
+                      const updatedSocialMedia = formData.socialMedia.filter(social => social.platform !== 'telegram');
+                      updateFormField('socialMedia', [
+                      ...updatedSocialMedia,
+                      { platform: 'telegram', username: e.target.value }
+                      ]);
+                    }}
+                    placeholder="@username"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="edit-instagram">Instagram</Label>
+                    <Input
+                    id="edit-instagram"
+                    value={formData.socialMedia.find(social => social.platform === 'instagram')?.username || ''}
+                    onChange={(e) => {
+                      const updatedSocialMedia = formData.socialMedia.filter(social => social.platform !== 'instagram');
+                      updateFormField('socialMedia', [
+                      ...updatedSocialMedia,
+                      { platform: 'instagram', username: e.target.value }
+                      ]);
+                    }}
+                    placeholder="@username"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="edit-linkedin">LinkedIn</Label>
+                    <Input
+                    id="edit-linkedin"
+                    value={formData.socialMedia.find(social => social.platform === 'linkedin')?.username || ''}
+                    onChange={(e) => {
+                      const updatedSocialMedia = formData.socialMedia.filter(social => social.platform !== 'linkedin');
+                      updateFormField('socialMedia', [
+                      ...updatedSocialMedia,
+                      { platform: 'linkedin', username: e.target.value }
+                      ]);
+                    }}
+                    placeholder="linkedin.com/in/username"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="edit-email">Email</Label>
+                    <Input
+                    id="edit-email"
+                    value={formData.socialMedia.find(social => social.platform === 'email')?.username || ''}
+                    onChange={(e) => {
+                      const updatedSocialMedia = formData.socialMedia.filter(social => social.platform !== 'email');
+                      updateFormField('socialMedia', [
+                      ...updatedSocialMedia,
+                      { platform: 'email', username: e.target.value }
+                      ]);
+                    }}
+                    placeholder="your.email@smu.edu.sg"
+                    />
+                  </div>
+              </div>
+
+            </div>
+          </div>
+        )
 
       default:
         return <div>Invalid step</div>;
@@ -735,7 +801,6 @@ const ProfileWelcomeFlow: React.FC = () => {
       </div>
     );
   }
-
   return (
     <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
       <div className="w-full max-w-2xl">

@@ -41,6 +41,18 @@ export const moduleRouter = createTRPCRouter({
         return modules;
     }),
 
+    getAllModulesClassId: protectedProcedure.query(async ({ ctx }) => {
+        const modules = await ctx.db.modules.findMany({
+            orderBy: { name: "asc" },
+            select:{
+                classId: true
+            }
+        });
+
+        return modules;
+    }),
+
+
     // Get modules for current user
     getUserModules: protectedProcedure.query(async ({ ctx }) => {
         const userModules = await ctx.db.modulesOnUsers.findMany({

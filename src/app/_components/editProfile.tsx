@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '~/components/ui/dialog';
 import { Button } from '~/components/ui/button';
 import { Input } from '~/components/ui/input';
@@ -30,8 +30,8 @@ interface Module {
 interface UserProfile {
     name: string;
     enrollmentYear: number;
-    intro:string;
-    image:string;
+    intro: string;
+    image: string;
     bannerURL: string;
     course: Course;
     project: Project[];
@@ -89,13 +89,13 @@ const EditProfileModal: React.FC<Props> = ({ open, userProfile, onSave, onClose 
     const handleInputChange = useCallback((field: keyof UserProfile, value: string) => {
         setFormData((prev: UserProfile) => ({ ...prev, [field]: value }));
     }, []);
-    
+
     // Optimize social media handling to prevent unnecessary re-renders
     const handleSocialChange = useCallback((platform: string, value: string) => {
         setFormData((prev: UserProfile) => {
             const socialMedia: SocialMedia[] = prev.socialMedia ?? [];
             const existing = socialMedia.find(s => s.platform === platform);
-            
+
             if (existing) {
                 // Update existing platform
                 return {
@@ -230,6 +230,8 @@ const EditProfileModal: React.FC<Props> = ({ open, userProfile, onSave, onClose 
         return formData.socialMedia?.find(s => s.platform === platform)?.username ?? '';
     };
 
+    useEffect(() =>
+        console.log(formData), [formData])
     return (
         <Dialog open={open} onOpenChange={onClose}>
             <DialogContent className="max-w-md mx-auto h-[90vh] flex flex-col p-0 bg-slate-900">
