@@ -23,7 +23,7 @@ const ChatMockup = ({ id }: Props) => {
       {/* OG Card Preview */}
       <Image
         alt="User OG Image"
-        src={`${process.env.NEXT_PUBLIC_SITE_URL}/api/og/profile/${id}`}
+        src={`https://campus-connect-nine-zeta.vercel.app/api/og/profile/${id}`}
         width={300}
         height={150}
         className="h-auto w-full"
