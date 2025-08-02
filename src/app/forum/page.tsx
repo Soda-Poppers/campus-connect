@@ -18,6 +18,7 @@ import {
 const ForumPage = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [showCreatePost, setShowCreatePost] = useState(false);
+    const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const [newPost, setNewPost] = useState({
         title: '',
         description: '',
@@ -171,16 +172,11 @@ ${senderName}`;
         }
     };
 
-    const filteredPosts = posts.filter(post => {
-        if (!searchQuery) return true;
-        const query = searchQuery.toLowerCase();
-        return (
-            post.title.toLowerCase().includes(query) ||
-            post.description.toLowerCase().includes(query) ||
-            post.category.toLowerCase().includes(query) ||
-            post.author.name.toLowerCase().includes(query)
-        );
-    });
+    const filteredPosts = posts.filter((post) =>
+        (selectedCategory === null || post.category === selectedCategory) &&
+        post.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
 
     return (
         <div className="h-full container mx-auto overflow-y-auto safe-area-top">
@@ -275,6 +271,26 @@ ${senderName}`;
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="pl-10"
                     />
+                </div>
+
+                {/* Category Filter */}
+                <div className="flex flex-wrap gap-2 mb-5">
+                    {[
+                        { value: null, label: "All" },
+                        { value: "project", label: "Project" },
+                        { value: "study", label: "Study Group" },
+                        { value: "startup", label: "Startup" },
+                        { value: "competition", label: "Competition" },
+                    ].map((cat) => (
+                        <Button
+                            key={cat.value ?? 'all'}
+                            variant={selectedCategory === cat.value ? "default" : "outline"}
+                            className="text-sm"
+                            onClick={() => setSelectedCategory(cat.value)}
+                        >
+                            {cat.label}
+                        </Button>
+                    ))}
                 </div>
 
                 {/* Posts */}
