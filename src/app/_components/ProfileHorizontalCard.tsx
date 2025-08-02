@@ -105,8 +105,6 @@ const HorizontalNamecard = ({ user }: Props) => {
     return `Y${yearNumber}`;
   };
 
-  console.log("user>>>>>>>", user);
-
   return (
     <div className="mx-auto my-5 w-full max-w-md px-4 sm:max-w-lg md:max-w-xl lg:max-w-2xl">
       {/* Container with 4:3 aspect ratio (horizontal card) */}
