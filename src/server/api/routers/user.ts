@@ -104,6 +104,7 @@ export const userRouter = createTRPCRouter({
           enrollmentYear: true,
           hardSkills: true,
           softSkills: true,
+          image: true,
           Modules: {
             select: {
               module: {

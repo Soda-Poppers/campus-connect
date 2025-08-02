@@ -36,6 +36,7 @@ type Users = {
     id: string; // Assuming 'id' is a string in your database schema
     name: string;
     course: string;
+    image: string;
     enrollmentYear: number; // Assuming 'enrollmentYear' is a number
     hardSkills: Skill[]; // Assuming 'hardSkills' is an array of strings
     softSkills: Skill[]; // Assuming 'softSkills' is an array of strings
@@ -102,6 +103,7 @@ const DiscoveryPage = () => {
                 enrollmentYear: user.enrollmentYear || 2000,
                 hardSkills: user.hardSkills as Skill[],
                 softSkills: user.softSkills as Skill[],
+                image: user.image || '',
                 Modules: user.Modules,
             }));
             setUsers(mappedUsers);
@@ -200,9 +202,10 @@ const DiscoveryPage = () => {
         };
 
         return (
-            <Card className="p-5 hover:shadow-lg transition-all duration-200 border border-border/50 card-animate">
+            <Card className="p-5 hover:shadow-lg transition-all duration-200 border border-border/50 card-animate ">
                 <div className="text-center">
                     <Avatar className="w-20 h-20 mx-auto mb-4 border-2 border-primary/20">
+                    <AvatarImage src={user.image} />
                         <AvatarFallback className="bg-gradient-to-br from-primary/10 to-secondary/10 text-primary font-medium text-lg">
                             {user.name.split(' ').map(n => n[0]).join('')}
                         </AvatarFallback>
@@ -242,8 +245,8 @@ const DiscoveryPage = () => {
     };
 
     return (
-        <div className="h-full overflow-y-auto safe-area-top touch-scroll">
-            <div className="p-6 space-y-6">
+        <div className="h-full overflow-y-auto safe-area-top touch-scroll container mx-auto">
+            <div className="px-18 py-14 space-y-6">
                 {/* Header */}
                 <div className="flex justify-between items-center">
                     <h1 className="text-2xl font-bold text-primary">Discover Students</h1>
@@ -363,7 +366,7 @@ const DiscoveryPage = () => {
                 {/* User Grid/List */}
                 <div className={
                     viewMode === 'grid'
-                        ? 'grid grid-cols-1 sm:grid-cols-2 gap-5'
+                        ? 'grid grid-cols-1 sm:grid-cols-3 gap-5'
                         : 'space-y-4'
                 }>
                     {filteredUsers.map((user) => (
