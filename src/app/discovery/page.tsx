@@ -52,10 +52,8 @@ const courseOptions = Object.entries(Course).map(([key, value]) => ({
     label: value.replace(/_/g, " ").toLowerCase().replace(/\b\w/g, char => char.toUpperCase()),
 }));
 
-// Removed the useRouter call here
-
 const DiscoveryPage = () => {
-    const router = useRouter(); // Moved useRouter inside the component
+    const router = useRouter();
     const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'list'
     const [activeFilters, setActiveFilters] = useState<ModuleFilter[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
@@ -98,12 +96,12 @@ const DiscoveryPage = () => {
         if (getAllUserByFilter.data) {
             const mappedUsers = getAllUserByFilter.data.map(user => ({
                 id: user.id,
-                name: user.name || '',
-                course: user.course || '',
-                enrollmentYear: user.enrollmentYear || 2000,
+                name: user.name ?? '',
+                course: user.course ?? '',
+                enrollmentYear: user.enrollmentYear ?? 2000,
                 hardSkills: user.hardSkills as Skill[],
                 softSkills: user.softSkills as Skill[],
-                image: user.image || '',
+                image: user.image ?? '',
                 Modules: user.Modules,
             }));
             setUsers(mappedUsers);
@@ -154,8 +152,6 @@ const DiscoveryPage = () => {
             );
         });
     });
-
-
 
     const UserCard = ({ user }: { user: Users }) => {
         if (viewMode === 'list') {
@@ -216,8 +212,6 @@ const DiscoveryPage = () => {
                     <Badge variant="default" className="text-xs px-3 py-1 mb-3">
                         {user.course.replace(/_/g, " ").toLowerCase().replace(/\b\w/g, char => char.toUpperCase())}
                     </Badge>
-
-
 
                     <div className="flex flex-wrap gap-2 justify-center mb-5">
                         {user.hardSkills?.slice(0, 2).map((skill, index) => (
