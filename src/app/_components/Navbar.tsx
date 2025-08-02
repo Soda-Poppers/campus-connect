@@ -4,7 +4,6 @@ import Image from "next/image";
 
 // import type { Session } from "next-auth";
 // import { signIn, signOut } from "next-auth/react";
-// import Link from "next/link";
 
 // interface NavbarProps {
 //   session?: Session | null;
@@ -86,7 +85,7 @@ import type { Session } from "next-auth";
 import { signIn, signOut } from "next-auth/react";
 import Link from "next/link";
 import { useState } from "react";
-import { Menu, X, User, Home, MessageSquare, LogOut, LogIn, Compass } from "lucide-react";
+import { Menu, X, User, Home, MessageSquare, LogOut, LogIn, Compass, HomeIcon } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 
 interface NavbarProps {
@@ -130,22 +129,37 @@ const Navbar: React.FC<NavbarProps> = ({ session }) => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-1">
-            <Link
-              href="/forum"
-              className="flex items-center space-x-2 px-4 py-2 rounded-lg text-gray-700 hover:text-[#151b4d] hover:bg-gray-50 transition-all duration-200 group"
-            >
-              <Home className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
-              <span className="font-medium">Forum</span>
-            </Link>
+            {session?.user ? (
+              <>
+                <Link
+                  href="/"
+                  onClick={closeMobileMenu}
+                  className="flex items-center gap-3 px-4 py-3 h-14 text-gray-700 hover:text-[#151b4d] hover:bg-gray-50 transition-all duration-200 border-b border-gray-200"
+                >
+                  <HomeIcon className="w-5 h-5 text-gray-500" />
+                  <span className="font-medium ml-3">Home</span>
+                </Link>
 
-            {session?.user && (
-              <Link
-                href="/profile"
-                className="flex items-center space-x-2 px-4 py-2 rounded-lg text-gray-700 hover:text-[#151b4d] hover:bg-gray-50 transition-all duration-200 group"
-              >
-                <User className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
-                <span className="font-medium">Profile</span>
-              </Link>
+                <Link
+                  href="/discovery"
+                  onClick={closeMobileMenu}
+                  className="flex items-center gap-3 px-4 py-3 h-14 text-gray-700 hover:text-[#151b4d] hover:bg-gray-50 transition-all duration-200 border-b border-gray-200"
+                >
+                  <Compass className="w-5 h-5 text-gray-500" />
+                  <span className="font-medium ml-3">Discover</span>
+                </Link>
+
+                <Link
+                  href="/forum"
+                  onClick={closeMobileMenu}
+                  className="flex items-center gap-3 px-4 py-3 h-14 text-gray-700 hover:text-[#151b4d] hover:bg-gray-50 transition-all duration-200 border-b border-gray-200"
+                >
+                  <MessageSquare className="w-5 h-5 text-gray-500" />
+                  <span className="font-medium ml-3">Forum</span>
+                </Link>
+              </>
+            ) : (
+              <div></div>
             )}
           </div>
 
@@ -153,16 +167,19 @@ const Navbar: React.FC<NavbarProps> = ({ session }) => {
           <div className="hidden md:flex items-center space-x-4">
             {session?.user ? (
               <div className="flex items-center space-x-3">
-                {session.user.image && (
-                  <img
-                    src={session.user.image}
-                    alt="Profile"
-                    className="w-8 h-8 rounded-full border-2 border-[#8a704d]/20"
-                  />
-                )}
-                <span className="text-sm text-gray-600 hidden lg:block">
-                  {session.user.name}
-                </span>
+                <Link href="/profile" className="flex items-center space-x-2 cursor-pointer pr-5">
+                  {session.user.image && (
+                    <img
+                      src={session.user.image}
+                      alt="Profile"
+                      className="w-8 h-8 rounded-full border-2 border-[#8a704d]/20"
+                    />
+                  )}
+                  <span className="text-sm text-gray-600 hidden lg:block">
+                    {session.user.name}
+                  </span>
+                </Link>
+
                 <button
                   onClick={() => signOut()}
                   className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-[#151b4d] to-[#8a704d] text-white rounded-lg hover:shadow-lg transform hover:scale-105 transition-all duration-200"
@@ -203,10 +220,18 @@ const Navbar: React.FC<NavbarProps> = ({ session }) => {
           : 'max-h-0 opacity-0 overflow-hidden'
           }`}>
           <div className="pt-4">
-
             <div className="">
               {session?.user ? (
                 <div className="">
+                  <Link
+                    href="/"
+                    onClick={closeMobileMenu}
+                    className="flex items-center gap-3 px-4 py-3 h-14 text-gray-700 hover:text-[#151b4d] hover:bg-gray-50 transition-all duration-200 border-b border-gray-200"
+                  >
+                    <HomeIcon className="w-5 h-5 text-gray-500" />
+                    <span className="font-medium ml-3">Home</span>
+                  </Link>
+
                   {/* Discovery Page Link */}
                   <Link
                     href="/discovery"

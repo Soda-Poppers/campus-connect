@@ -18,7 +18,7 @@ export default function AfterLogin() {
     if (status === "authenticated") {
       if (userCheck.status === "success") {
         if (userCheck.data?.id) {
-          router.replace("/profile");
+          router.replace("/");
         } else {
           router.replace("/new-user");
         }
