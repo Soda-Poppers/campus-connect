@@ -748,7 +748,7 @@ const ProfileWelcomeFlow: React.FC = () => {
                     value={
                       formData.socialMedia.find(
                         (social) => social.platform === "email",
-                      )?.username || ""
+                      )?.username ?? ""
                     }
                     onChange={(e) => {
                       const updatedSocialMedia = formData.socialMedia.filter(

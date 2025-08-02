@@ -102,8 +102,8 @@ const ChatMockup = ({ id }: Props) => {
             <div className="max-w-[250px]">
               <div className="mb-2 rounded-lg rounded-br-none bg-blue-600 px-3 py-2 text-white shadow-sm">
                 <p className="text-sm">
-                  Find me, '{user.name}' on CampusConnect! You can view my
-                  skills, projects and more!
+                  Find me, &apos;{user.name}&apos; on CampusConnect! You can
+                  view my skills, projects and more!
                 </p>
               </div>
 
