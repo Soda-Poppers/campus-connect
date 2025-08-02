@@ -228,8 +228,9 @@ const ProfilePage = () => {
       )}
       <div className="mx-auto max-w-lg space-y-6 p-4">
         {/* Header Actions */}
-        <div className="flex items-center justify-between">
+        <div className="space-y-2 md:flex md:justify-between">
           <h1 className="text-primary text-xl font-bold">My Profile</h1>
+
           <div className="flex space-x-2">
             <Button
               variant="outline"

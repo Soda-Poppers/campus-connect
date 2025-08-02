@@ -266,9 +266,6 @@ const EditProfileModal: React.FC<Props> = ({
         <DialogHeader className="p-4">
           <div className="flex items-center justify-between">
             <DialogTitle>Edit Profile</DialogTitle>
-            <Button variant="ghost" size="sm" onClick={onClose}>
-              <X className="h-4 w-4" />
-            </Button>
           </div>
           <DialogDescription className="sr-only">
             Edit your profile information including basic details, skills,
