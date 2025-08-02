@@ -21,6 +21,10 @@ export default async function Home() {
     redirect("/login"); // or wherever you want to redirect for profile setup
   }
 
+  if (!user) {
+    redirect("login");
+  }
+
   return (
     <HydrateClient>
       <main className="container mx-auto flex min-h-screen">
