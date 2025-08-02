@@ -46,6 +46,9 @@ import type {
   Modules,
   ModulesOnUsers as PrismaModulesOnUsers,
 } from "@prisma/client";
+import Link from "next/link";
+import { Button } from "~/components/ui/button";
+import { ArrowRight } from "lucide-react";
 
 // Updated UserData type to match your Prisma schema and tRPC return
 type UserData = User & {
@@ -222,6 +225,14 @@ const HorizontalNamecard = ({ user }: Props) => {
                 </div>
               )}
             </div>
+          </div>
+          <div className="flex justify-end mb-3 pr-3">
+            <Link href="/profile">
+              <Button variant="outline" className="text-primary hover:bg-muted">
+                View full profile
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </Button>
+            </Link>
           </div>
         </Card>
       </div>
