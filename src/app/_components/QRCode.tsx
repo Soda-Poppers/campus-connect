@@ -29,7 +29,7 @@ const QRCodeModal: React.FC<QRCodeModalProps> = ({
   const qrRef = useRef<HTMLDivElement>(null);
 
   // Generate the profile URL
-  const profileUrl = `https://${process.env.NEXT_PUBLIC_SITE_URL}/profile/${userId}`;
+  const profileUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/profile/${userId}/view`;
 
   const handleCopyUrl = async () => {
     try {
