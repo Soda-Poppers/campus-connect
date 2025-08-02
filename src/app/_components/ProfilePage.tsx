@@ -10,6 +10,7 @@ import NamecardModal from "../_components/generateNameCard";
 import type { Skill } from "~/types/skills";
 import type { Project } from "~/types/projects";
 import type { SocialMedia } from "~/types/socialMedia";
+import { AnimatePresence, motion } from "framer-motion";
 import toast from "react-hot-toast";
 import {
   Edit3,
@@ -20,6 +21,7 @@ import {
   ChevronDown,
   ChevronUp,
   CreditCard,
+  Copy,
 } from "lucide-react";
 import { useState } from "react";
 import type { Course } from "@prisma/client";
@@ -87,14 +89,34 @@ const ProfilePage = () => {
     socialMedia: [] as SocialMedia[],
   });
 
+  const [copied, setCopied] = useState(false);
+  const [hovered, setHovered] = useState(false);
   const [modules, setUserModules] = useState<Module[]>([]);
 
   const { data: userData } = api.user.getCurrentUser.useQuery();
   const { data: userModules } = api.module.getUserModules.useQuery();
 
+  const getAcademicYearLabel = (enrollmentYear?: number | string) => {
+    if (!enrollmentYear) return "";
+    const year =
+      typeof enrollmentYear === "string"
+        ? parseInt(enrollmentYear, 10)
+        : enrollmentYear;
+    if (isNaN(year)) return "";
+    const currentYear = new Date().getFullYear();
+
+    if (year > currentYear) {
+      return `Pre-graduate (${year})`;
+    }
+    if (currentYear - year >= 6) {
+      return `Alumni (${year})`;
+    }
+    const yearNumber = currentYear - year + 1;
+    return `Y${yearNumber}`;
+  };
+
   useEffect(() => {
     if (userData) {
-      console.log(userData);
       setProfile({
         name: userData.name ?? "",
         enrollmentYear: userData.enrollmentYear ?? 1,
@@ -203,7 +225,7 @@ const ProfilePage = () => {
   // };
 
   return (
-    <div className="safe-area-top h-full overflow-y-auto">
+    <div className="safe-area-top h-full w-full overflow-y-auto">
       {showEditProfile && (
         <div className="modal-overlay">
           <EditProfileModal
@@ -223,7 +245,7 @@ const ProfilePage = () => {
           />
         </div>
       )}
-      <div className="space-y-6 p-4">
+      <div className="mx-auto max-w-lg space-y-6 p-4">
         {/* Header Actions */}
         <div className="flex items-center justify-between">
           <h1 className="text-primary text-xl font-bold">My Profile</h1>
@@ -238,7 +260,7 @@ const ProfilePage = () => {
         </div>
 
         {/* Profile Card - Singpass Style */}
-        <Card className="border-primary/20 overflow-hidden border-2">
+        <Card className="border-primary/20 w-full overflow-hidden border-2 p-0">
           {/* Header Section with Background */}
           <div className="from-primary to-secondary relative bg-gradient-to-r p-6 text-white">
             <div className="flex items-start space-x-4">
@@ -260,7 +282,7 @@ const ProfilePage = () => {
                     .replace(/\b\w/g, (char) => char.toUpperCase())}
                 </p>
                 <p className="text-sm text-white/80">
-                  {profile.enrollmentYear}
+                  {getAcademicYearLabel(profile.enrollmentYear)}
                 </p>
               </div>
             </div>
@@ -442,9 +464,39 @@ const ProfilePage = () => {
             </div>
           </div>
         </Card>
+        {userData?.id && (
+          <div
+            className="relative mt-1 flex w-fit cursor-pointer items-center gap-2 text-sm text-gray-500"
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => {
+              setHovered(false);
+              setCopied(false);
+            }}
+            onClick={() => {
+              void navigator.clipboard.writeText(userData.id);
+              setCopied(true);
+              setTimeout(() => setCopied(false), 500);
+            }}
+          >
+            <span className="font-light opacity-50">ID: {userData.id}</span>
 
-        {/* Bottom Spacing for Navigation */}
-        <div className="h-20"></div>
+            {/* Animate icon based on hover or copied state */}
+            <AnimatePresence>
+              {(hovered || copied) && (
+                <motion.div
+                  key={copied ? "check" : "copy"}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.1 }}
+                  className="ml-1 text-gray-400"
+                >
+                  {copied ? "Copied!" : <Copy size={16} />}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        )}
       </div>
     </div>
   );

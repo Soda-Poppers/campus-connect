@@ -1,8 +1,10 @@
 import React from "react";
 
-
 import type { Metadata } from "next";
 import ProfilePage from "../_components/ProfilePage";
+import { auth } from "~/server/auth";
+import { api } from "~/trpc/server";
+import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
   title: "User Profile",
@@ -23,7 +25,23 @@ export const metadata: Metadata = {
 
 // const ProfilePage = ({ userProfile, onShowQR, onEditProfile, onShowNamecard }) => {
 const Page = async () => {
-  return <ProfilePage />;
+  const session = await auth();
+
+  if (!session?.user) {
+    redirect("/login");
+  } else {
+    const userCheck = await api.user.didUserFinishWelcome();
+
+    if (!userCheck?.enrollmentYear) {
+      redirect("/new-user");
+    }
+  }
+
+  return (
+    <div className="">
+      <ProfilePage />
+    </div>
+  );
 };
 
 export default Page;
