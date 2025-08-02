@@ -31,14 +31,14 @@ const Page = async () => {
     redirect("/login");
   } else {
     const userCheck = await api.user.didUserFinishWelcome();
-    console.log(">>>>>> HITTT");
+
     if (!userCheck?.enrollmentYear) {
       redirect("/new-user");
     }
   }
 
   return (
-    <div className="container-sm mx-auto">
+    <div className="">
       <ProfilePage />
     </div>
   );
