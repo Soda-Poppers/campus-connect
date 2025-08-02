@@ -686,7 +686,7 @@ const ProfileWelcomeFlow: React.FC = () => {
 
   if (isCompleted) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-green-50 to-emerald-100 p-4">
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-secondary/50 to-primary p-4">
         <div className="w-full max-w-2xl">
           <div className="rounded-2xl bg-white p-8 text-center shadow-xl">
             {/* Success animation/icon */}
@@ -706,7 +706,7 @@ const ProfileWelcomeFlow: React.FC = () => {
             </h1>
             <p className="mb-2 text-lg text-gray-700">
               Hi{" "}
-              <span className="font-semibold text-green-600">
+              <span className="font-semibold text-primary">
                 {formData.name}
               </span>
               !
@@ -724,10 +724,10 @@ const ProfileWelcomeFlow: React.FC = () => {
               <Link
                 type="button"
                 href="/profile"
-                className="btn btn-wite flex items-center justify-center gap-2 rounded-xl bg-primary-600 px-8 py-3 font-medium text-white transition-colors hover:bg-primary-700"
+                className="btn btn-wite flex items-center justify-center gap-2 rounded-xl bg-primary px-8 py-3 font-medium text-white transition-colors hover:bg-primary-700"
               >
                 <BookOpen className="h-5 w-5" />
-                Go to Dashboard
+                Go to Profile
               </Link>
             </div>
           </div>
