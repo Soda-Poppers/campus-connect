@@ -234,8 +234,8 @@ const EditProfileModal: React.FC<Props> = ({ open, userProfile, onSave, onClose 
         console.log(formData), [formData])
     return (
         <Dialog open={open} onOpenChange={onClose}>
-            <DialogContent className="max-w-md mx-auto h-[90vh] flex flex-col p-0 bg-slate-900">
-                <DialogHeader className="p-4 border-b">
+            <DialogContent className="max-w-md mx-auto h-[90vh] flex flex-col p-0">
+                <DialogHeader className="p-4">
                     <div className="flex items-center justify-between">
                         <DialogTitle>Edit Profile</DialogTitle>
                         <Button variant="ghost" size="sm" onClick={onClose}>

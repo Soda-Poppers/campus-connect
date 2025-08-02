@@ -109,7 +109,7 @@ const NamecardModal: React.FC<NamecardModalProps> = ({
   }, [profile]);
 
   const PortraitNamecard: React.FC = () => (
-    <Card className="from-primary/5 to-secondary/5 border-primary/20 mx-auto w-full max-w-xs overflow-hidden border-2 bg-slate-600 bg-gradient-to-br">
+    <Card className="from-primary/5 to-secondary/5 border-primary/20 mx-auto w-full max-w-xs overflow-hidden border-2  bg-gradient-to-br">
       {/* Header with gradient */}
       <div className="from-primary to-secondary bg-gradient-to-r p-6 text-center text-white">
         <Avatar className="mx-auto mb-4 h-20 w-20 border-4 border-white">
