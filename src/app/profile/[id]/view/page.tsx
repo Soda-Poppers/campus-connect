@@ -22,6 +22,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params;
 
+<<<<<<< HEAD
   // Try to fetch user; if missing, return minimal metadata (or could throw/notFound)
   let user;
   try {
@@ -53,6 +54,35 @@ export async function generateMetadata({
 
   const profileUrl = `${baseUrl}/profile/${id}/view`;
   const ogImageUrl = `${baseUrl}/api/og/profile/${id}`;
+=======
+  // Fetch user data in generateMetadata
+  let user: UserWithModules | null = null;
+  try {
+    user = await api.user.getUserCard({ id: id });
+  } catch (err: any) {
+    // Return default metadata if user not found
+    return {
+      title: "User Profile Not Found",
+      description: "The requested user profile could not be found.",
+    };
+  }
+
+  if (!user) {
+    return {
+      title: "User Profile Not Found",
+      description: "The requested user profile could not be found.",
+    };
+  }
+
+  const title = `${user.name || "User"} - Campus Connect Profile`;
+  const description =
+    `View ${user.name || "this user"}'s profile on Campus Connect. ${user.course ? `Studying ${user.course}` : ""} ${user.enrollmentYear ? `since ${user.enrollmentYear}` : ""}`.trim();
+
+  const baseUrl =
+    process.env.NEXT_PUBLIC_BASE_URL || "campus-connect-nine-zeta.vercel.app";
+  const ogImageUrl = `${baseUrl}/api/og/profile/${id}`;
+  const profileUrl = `${baseUrl}/profile/${id}/view`;
+>>>>>>> 3bf2510 (changing some og image problems)
 
   return {
     title,
@@ -67,7 +97,11 @@ export async function generateMetadata({
           url: ogImageUrl,
           width: 1200,
           height: 630,
+<<<<<<< HEAD
           alt: `${user?.name ?? "User"}'s Profile Card`,
+=======
+          alt: `${user.name || "User"}'s Profile Card`,
+>>>>>>> 3bf2510 (changing some og image problems)
         },
       ],
       locale: "en_US",
@@ -78,6 +112,14 @@ export async function generateMetadata({
       title,
       description,
       images: [ogImageUrl],
+<<<<<<< HEAD
+=======
+    },
+    // Additional metadata
+    robots: {
+      index: true,
+      follow: true,
+>>>>>>> 3bf2510 (changing some og image problems)
     },
   };
 }
@@ -152,6 +194,7 @@ const ProfilePublicView = async ({
   if (!user) {
     return <div>No user found.</div>;
   }
+<<<<<<< HEAD
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -169,6 +212,8 @@ const ProfilePublicView = async ({
       url: "https://campus-connect-nine-zeta.vercel.app",
     },
   };
+=======
+>>>>>>> 3bf2510 (changing some og image problems)
 
   return (
     <div

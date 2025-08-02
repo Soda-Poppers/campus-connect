@@ -11,7 +11,11 @@ import { SessionProvider } from "next-auth/react";
 import { Toaster } from "react-hot-toast";
 
 export const metadata: Metadata = {
+<<<<<<< HEAD
   title: "CampusConnect",
+=======
+  title: "Campus Connect",
+>>>>>>> 3bf2510 (changing some og image problems)
   description: "Connect, Collaborate, Create",
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 

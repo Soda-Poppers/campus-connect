@@ -8,7 +8,11 @@ import "./src/env.js";
 const config = {
 
       images: {
+<<<<<<< HEAD
     domains: ['campus-connect-nine-zeta.vercel.app', "images.ctfassets.net", 'localhost'],
+=======
+    domains: ['campus-connect-nine-zeta.vercel.app'],
+>>>>>>> 3bf2510 (changing some og image problems)
   },
 };
 
