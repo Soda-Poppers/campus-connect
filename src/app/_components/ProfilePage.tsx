@@ -11,6 +11,8 @@ import type { Skill } from "~/types/skills";
 import type { Project } from "~/types/projects";
 import type { SocialMedia } from "~/types/socialMedia";
 import { AnimatePresence, motion } from "framer-motion";
+import QRCodeModal from "../_components/QRCode"; // Adjust path as needed
+import { QrCode } from "lucide-react";
 import toast from "react-hot-toast";
 import {
   Edit3,
@@ -67,7 +69,6 @@ export const metadata: Metadata = {
   },
 };
 
-// const ProfilePage = ({ userProfile, onShowQR, onEditProfile, onShowNamecard }) => {
 const ProfilePage = () => {
   const utils = api.useUtils();
   const [expandedModules, setExpandedModules] = useState<
@@ -75,6 +76,8 @@ const ProfilePage = () => {
   >({});
   const [showEditProfile, setShowEditProfile] = useState(false);
   const [showNamecard, setShowNamecard] = useState(false);
+  const [showQRCode, setShowQRCode] = useState(false);
+
   // Form state
   const [profile, setProfile] = useState<FormData>({
     id: "",
@@ -94,6 +97,8 @@ const ProfilePage = () => {
   const [copied, setCopied] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [modules, setUserModules] = useState<Module[]>([]);
+
+  const onShowQR = () => setShowQRCode(true);
 
   const { data: userData } = api.user.getCurrentUser.useQuery();
   const { data: userModules } = api.module.getUserModules.useQuery();
@@ -147,19 +152,7 @@ const ProfilePage = () => {
         })),
       );
     }
-    // name    String
-    // classId String           @unique
-    // prof    String
-    // User    ModulesOnUsers[]
-    // userId  String?
-  }, [
-    // name    String
-    // classId String           @unique
-    // prof    String
-    // User    ModulesOnUsers[]
-    // userId  String?
-    userModules,
-  ]);
+  }, [userModules]);
 
   const onEditProfile = () => setShowEditProfile(true);
   const onShowNamecard = () => setShowNamecard(true);
@@ -201,31 +194,6 @@ const ProfilePage = () => {
     e.preventDefault();
     editUser(profileData);
   };
-  // // Mock data if profile is empty
-  // const profile = userProfile.name ? userProfile : {
-  //     id: '1',
-  //     name: 'Sarah Chen',
-  //     email: 'sarah.chen.2023@smu.edu.sg',
-  //     degree: 'Computer Science',
-  //     year: 'Year 2',
-  //     intro: 'Passionate about AI and machine learning!',
-  //     profilePhoto: '',
-  //     softSkills: ['Leadership', 'Communication', 'Problem Solving', 'Teamwork', 'Creativity'],
-  //     hardSkills: ['Python', 'React', 'Machine Learning', 'SQL', 'Git'],
-  //     modules: [
-  //         { id: 1, code: 'CS102', name: 'Data Structures and Algorithms', prof: 'Prof. Smith', classId: 'G1' },
-  //         { id: 2, code: 'IS112', name: 'Data Management', prof: 'Prof. Johnson', classId: 'G2' },
-  //         { id: 3, code: 'STAT101', name: 'Introduction to Statistics', prof: 'Prof. Wilson', classId: 'G3' }
-  //     ],
-  //     interests: ['AI/ML', 'Web Development', 'Data Science'],
-  //     ccas: ['SMU Coding Club', 'Debate Society'],
-  //     socials: {
-  //         telegram: '@sarahchen',
-  //         instagram: '@sarah_codes',
-  //         linkedin: 'linkedin.com/in/sarah-chen',
-  //         email: 'sarah.chen.2023@smu.edu.sg'
-  //     }
-  // };
 
   return (
     <div className="safe-area-top h-full w-full overflow-y-auto">
@@ -248,14 +216,32 @@ const ProfilePage = () => {
           />
         </div>
       )}
+      {showQRCode && (
+        <div className="modal-overlay">
+          <QRCodeModal
+            open={showQRCode}
+            onClose={() => setShowQRCode(false)}
+            userId={profile.id}
+            userName={profile.name}
+          />
+        </div>
+      )}
       <div className="mx-auto max-w-lg space-y-6 p-4">
         {/* Header Actions */}
         <div className="flex items-center justify-between">
           <h1 className="text-primary text-xl font-bold">My Profile</h1>
           <div className="flex space-x-2">
-            {/* <Button variant="outline" size="sm" onClick={onShowQR}>
-                            <QrCode className="w-4 h-4" />
-                        </Button> */}
+            <Button
+              variant="outline"
+              className="flex-1"
+              onClick={onShowNamecard}
+            >
+              <CreditCard className="mr-2 h-4 w-4" />
+              Generate Namecard
+            </Button>
+            <Button variant="outline" size="sm" onClick={onShowQR}>
+              <QrCode className="h-4 w-4" />
+            </Button>
             <Button variant="outline" size="sm" onClick={onEditProfile}>
               <Edit3 className="h-4 w-4" />
             </Button>
@@ -460,10 +446,6 @@ const ProfilePage = () => {
                 <CreditCard className="mr-2 h-4 w-4" />
                 Generate Namecard
               </Button>
-              {/* <Button onClick={onShowQR} className="bg-primary">
-                                <QrCode className="w-4 h-4 mr-2" />
-                                Show QR Code
-                            </Button> */}
             </div>
           </div>
         </Card>

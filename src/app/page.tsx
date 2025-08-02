@@ -18,6 +18,10 @@ export default async function Home() {
     user = await api.user.getUser({ id: session.user.id });
   }
 
+  if (!user) {
+    redirect("login");
+  }
+
   return (
     <HydrateClient>
       <main className="container mx-auto flex min-h-screen">
