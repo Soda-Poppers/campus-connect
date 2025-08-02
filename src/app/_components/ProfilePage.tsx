@@ -29,6 +29,7 @@ import { api } from "~/trpc/react";
 import type { Metadata } from "next";
 
 interface FormData {
+  id: string;
   name: string;
   enrollmentYear: number;
   intro: string;
@@ -76,6 +77,7 @@ const ProfilePage = () => {
   const [showNamecard, setShowNamecard] = useState(false);
   // Form state
   const [profile, setProfile] = useState<FormData>({
+    id: "",
     name: "",
     enrollmentYear: 0,
     course: "COMPUTER_SCIENCE" as Course, // using enum value
@@ -118,6 +120,7 @@ const ProfilePage = () => {
   useEffect(() => {
     if (userData) {
       setProfile({
+        id: userData.id ?? "",
         name: userData.name ?? "",
         enrollmentYear: userData.enrollmentYear ?? 1,
         course: userData.course ?? "COMPUTER_SCIENCE",
