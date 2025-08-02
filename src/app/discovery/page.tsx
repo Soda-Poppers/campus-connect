@@ -57,7 +57,7 @@ const DiscoveryPage = () => {
     const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(''); // New state for debounced query
     const [showFilters, setShowFilters] = useState(false);
     const [modules, setModules] = useState([]);
-    const [moduleOptions, setModuleOptions] = useState<Record<string, string[]>>({});
+    const [moduleOptions, setModuleOptions] = useState<string[]>([]);
     const [courseFilter, setCourseFilter] = useState<string>('all-courses');
     const [users, setUsers] = useState<Users[]>([]);
 
@@ -82,8 +82,9 @@ const DiscoveryPage = () => {
     }, [searchQuery]);
 
     useEffect(() => {
+        console.log(allMods.data)
         if (allMods.data) {
-            const options: Record<string, string[]> = {};
+            const options = allMods.data.map(module => module.classId) // Adjust based on your data structure
             setModuleOptions(options);
         }
     }, [allMods.data]);
@@ -201,12 +202,12 @@ const DiscoveryPage = () => {
                         </AvatarFallback>
                     </Avatar>
 
-                    <h3 className="font-medium text-primary mb-1 text-lg">{user.name}</h3> 
+                    <h3 className="font-medium text-primary mb-1 text-lg">{user.name}</h3>
                     <p className="text-muted-foreground mb-3 text-sm">Enrolled in {user.enrollmentYear}</p>
                     <Badge variant="default" className="text-xs px-3 py-1 mb-3">
                         {user.course.replace(/_/g, " ").toLowerCase().replace(/\b\w/g, char => char.toUpperCase())}
                     </Badge>
-                    
+
 
 
                     <div className="flex flex-wrap gap-2 justify-center mb-5">
@@ -267,7 +268,7 @@ const DiscoveryPage = () => {
                 <div className="relative">
                     <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
                     <Input
-                        placeholder="Search by name, skills, modules, interests..."
+                        placeholder="Search by name, skills, modules..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="pl-12 h-14 mobile-form-input"
@@ -315,29 +316,22 @@ const DiscoveryPage = () => {
                                 </Button>
                             </div>
                         </div>
-
-                        {modules.map((modId) => (
-                            <div key={modId}>
-                                <h4 className="font-medium text-muted-foreground mb-3 capitalize text-sm">{modId}</h4>
-                                <div className="flex flex-wrap gap-2">
-                                    {moduleOptions[modId]?.map((option) => {
-                                        const filterObj = { modId: option };
-                                        const isActive = activeFilters.find(f => f.modId === option);
-                                        return (
-                                            <Button
-                                                key={option}
-                                                variant={isActive ? 'default' : 'outline'}
-                                                size="sm"
-                                                onClick={() => toggleFilter(filterObj)}
-                                                className="text-sm mobile-button"
-                                            >
-                                                {option}
-                                            </Button>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-                        ))}
+                        
+                        {moduleOptions.map((option) => {
+                            const filterObj = { modId: option };
+                            const isActive = activeFilters.find(f => f.modId === option);
+                            return (
+                                <Button
+                                    key={option}
+                                    variant={isActive ? 'default' : 'outline'}
+                                    size="sm"
+                                    onClick={() => toggleFilter(filterObj)}
+                                    className="text-sm mobile-button"
+                                >
+                                    {option}
+                                </Button>
+                            );
+                        })}
                     </Card>
                 )}
 
